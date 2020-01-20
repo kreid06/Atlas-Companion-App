@@ -1,0 +1,395 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+* {
+    -webkit-tap-highlight-color: rgba(0,0,0,0); /* make transparent link selection, adjust last value opacity 0 to 1.0 */
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
+body {
+    -webkit-touch-callout: none;                /* prevent callout to copy image, etc when tap to hold */
+    -webkit-text-size-adjust: none;             /* prevent webkit from resizing text to fit */
+    -webkit-user-select: none;                  /* prevent copy paste, to allow, change 'none' to 'text' */
+    background: radial-gradient(#31AEE2,#C4CCC7);
+    background-image:linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
+    font-family: system-ui, -apple-system, -apple-system-font, 'Segoe UI', 'Roboto', sans-serif;
+    font-size:12px;
+    height:100vh;
+    margin:0px;
+    padding:0px;
+    /* Padding to avoid the "unsafe" areas behind notches in the screen */
+    padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-right, 0px);
+    text-transform:uppercase;
+    width:100%;
+    display: flex;
+    align-items: center;
+}
+
+/* Portrait layout (default) */
+
+
+.header {
+    width:100%;
+    height:40px;
+    background-color: #1C93C4;
+    position: fixed;
+    top:0px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color:white;
+}
+
+.view {
+    /* background:url(../img/logo.png) no-repeat center top; 170px x 200px */
+    padding: 40px 0 40px 0;
+    display: flex;
+    flex-wrap: wrap;
+    /* height:calc(100vh - 80px); */
+    justify-content: center;
+    align-items: center;
+    width:100%;
+}
+.view.hidden {
+    display: none;
+}
+.view-container {
+    width:100%;
+    height: calc(100vh - 80px);
+    display: flex;
+    align-items: center;
+}
+.menu-button {
+    width: 60%;
+    height:20vh;
+    margin:1vh 1.5% ;
+    background-color: lightgray;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5%;
+}
+#menu {
+    align-items: center;
+}
+.menu-button.hidden {
+    display: none;
+}
+.player-menu {
+    display: flex;
+    position: fixed;
+    padding: 40px 0 40px 0;
+    top: 40px;
+    flex-wrap: wrap;
+    /* height:calc(100vh - 80px); */
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 80px);
+    width:100%;
+    background-color: dimgray;
+}
+.player-menu.hidden {
+    display: none;
+}
+.player-menu-btn{
+    display: flex;
+    height:30px; position: fixed; top:5px; right:5px;
+    width:30px;
+}
+.menu-btn {
+    display: flex;
+    height:30px; position: fixed; top:5px; left:5px; width: 30px;
+}
+.button-overlay{
+    position: absolute;
+    width:100%;
+    height:100%;
+    z-index: 1;
+}
+.player-menu-icon{
+    height: 30px;
+    width:30px
+}
+.menu-icon{
+    height: 30px;
+    width:30px
+}
+.footer {
+    background-color: #1C93C4;
+    position: fixed;
+    top: calc(100vh - 40px);
+    color:white;
+    width: 100%;
+    height: 40px;
+}
+/* --- Damage Modal CSS --- */
+
+#damage {
+    flex-wrap: wrap;
+}
+.close-modal{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+}
+.damage-modal {
+    display: flex;
+    position: fixed;
+    height: 80vh;
+    width: 80%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #C4CCC7;
+    z-index: 1;
+    padding: 10% 0;
+    border-radius: 4%;
+    box-shadow: 1px 1px 8px ;
+}
+.damage-modal.hidden{
+    display: none;
+}
+
+.type-container{
+    display: flex;
+    width: 100%;
+    height: 20%;
+    justify-content: space-evenly;
+    align-items: center;
+    background-color: #1C93C4;
+}
+.type-button {
+    background-size: contain;
+    width: 25%;
+    padding-top: 23%;
+    background: no-repeat;
+    background-position: center;
+    display: flex;
+    position: relative;
+    border-radius: 10%;
+    justify-content: center;
+    align-items: flex-end;
+}
+.type-result-container{
+    display: flex;
+    width: 100%;
+    height: 25%;
+    background-color: #31AEE2;
+    flex-flow: row nowrap;
+    overflow-x: auto;
+}
+.type-result-container-2{
+    display: flex;
+    width: 100%;
+    height: 25%;
+    background-color: #65C2E9;
+    flex-flow: row nowrap;
+    overflow-x: auto;
+}
+.type-result-container.hidden{display: none;}
+.type-result-container-2.hidden{display: none;}
+.type-button.selected{background-color: greenyellow;}
+.land-button{background-image: url('../img/island.png');}
+.ship-button{background-image: url('../img/pirate-ship.png');}
+.player-button{background-image: url('../img/pirate-skull.png');}
+
+/* --- Attack Modal CSS ---  */
+.attackHTML {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.defendHTML {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+.attackHTML.hidden {display: none;}
+.defendHTML.hidden {display: none;}
+
+/* .category-container{
+    display: flex;
+    width:100%;
+    height: 40%;
+    flex-wrap: wrap;
+    background-color: black;
+}
+.category-container.collapsed{
+    height: 10%;
+}
+.category-container > .category-expand-button{
+    width:100%;
+    height: 25%;
+    background-color: #1C93C4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.category-container.collapsed > .category-expand-button{
+    height: 100%;
+}
+.category-card-container{
+    display: flex;
+    width:100%;
+    background-color: #31AEE2;
+    height: 75%;
+    flex-flow: row nowrap;
+    overflow-x: auto;
+}
+.category-container.hide > .category-card-container{
+    display: none;
+} */
+.item-card{
+    display: flex;
+    position: relative;
+    flex:0 0 auto;
+    width:25%;
+    height: 90%;
+    flex-wrap: wrap;
+    background-color: #1C93C4;
+    justify-content: center;
+    align-items: center;
+    margin: 5px;
+    border-radius: 10%;
+}
+.item-card.selected{
+    background-color: greenyellow;
+}
+.item-card-img{
+    width: 80%;
+}
+.item-card-text{
+    text-align: center;
+}
+.item-overlay {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top:0;
+    left:0;
+}
+.attacker-container{
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    height: 13.5vh;
+    background-color: lightskyblue;
+    padding: 1vh 0;
+}
+.result-container{
+    flex-grow: 1;
+    background-color: rgba(0,0,0,0.25);
+    width: 100%;
+    height: calc(46vh - 80px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.defender-container{
+    display: flex;
+    width: 100%;
+    height: 13.5vh;
+    background-color: red;
+    padding: 1vh 0;
+
+}
+.image-button{
+    display: flex;
+    height: calc(100% - 2vh);
+    position: relative;
+    border: dashed 3px rgba(0,0,0,.5);
+    margin: 1vh;
+}
+.damage-text{
+    position: absolute;
+    top:50%;
+    left:50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    text-align: center;
+}
+.damage-image{
+    height: 100%;
+}
+
+.damage-space {
+    height: 10vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Landscape layout (with min-width) */
+@media screen and (min-aspect-ratio: 1/1) and (min-width:400px) {
+    .app {
+        background-position:left center;
+        padding:75px 0px 75px 170px;  /* padding-top + padding-bottom + text area = image height */
+        margin:-90px 0px 0px -198px;  /* offset vertical: half of image height */
+                                      /* offset horizontal: half of image width and text area width */
+    }
+}
+
+h1 {
+    font-size:24px;
+    font-weight:normal;
+    margin:0px;
+    overflow:visible;
+    padding:0px;
+    text-align:center;
+}
+
+.event {
+    border-radius:4px;
+    -webkit-border-radius:4px;
+    color:#FFFFFF;
+    font-size:12px;
+    margin:0px 30px;
+    padding:2px 0px;
+}
+
+.event.listening {
+    background-color:#333333;
+    display:block;
+}
+
+.event.received {
+    background-color:#4B946A;
+    display:none;
+}
+
+@keyframes fade {
+    from { opacity: 1.0; }
+    50% { opacity: 0.4; }
+    to { opacity: 1.0; }
+}
+ 
+@-webkit-keyframes fade {
+    from { opacity: 1.0; }
+    50% { opacity: 0.4; }
+    to { opacity: 1.0; }
+}
+ 
+.blink {
+    animation:fade 3000ms infinite;
+    -webkit-animation:fade 3000ms infinite;
+}

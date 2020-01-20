@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <!--
+        Customize this policy to fit your own app's needs. For more guidance, see:
+            https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
+        Some notes:
+            * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
+            * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+            * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+                * Enable inline JS: add 'unsafe-inline' to default-src
+        -->
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, minimum-scale=1.0, user-scalable=no"/>
+
+        <link rel="stylesheet" type="text/css" href="css/index.css">
+        <title>Atlas Companion</title>
+    </head>
+    <body id="app">
+        <div class="header">
+            <div>Atlas Menu</div>
+            
+        </div>
+        <div class="player-menu-btn">
+            <img class="player-menu-icon" src="img/user.png"/>
+            <div class="button-overlay" id="player-menu-btn"></div>
+        </div>
+        <div class="menu-btn">
+            <img class="menu-icon" src="img/menu.png"/>
+            <div class="button-overlay" id="menu-btn"></div>
+        </div>
+        <div class="player-menu hidden" id="player-menu">
+            <h1>This is the Player Menu!</h1>
+        </div>
+        <div class="view-container" id="view-container">
+            <div class="view" id="menu">
+                <div class="menu-button" id="capture-calculator" data-id="1">
+                    Capture Times
+                </div>
+                <div class="menu-button" id="damage-calculator" data-id="2">
+                    Damage
+                </div>
+                <div class="menu-button" id="ship-calculator" data-id="3">
+                    Ship 
+                </div>
+            </div>
+            <div class="view hidden" id="capture">
+                <h1 class="damage-space">This is the Capture Time Calculator!</h1>
+            </div>
+            <div class="view hidden" id="damage">
+                <div class="damage-modal hidden" id="damage-modal">
+                    <img class="close-modal" id="closeDamageModal" src="./img/close.png"/>
+                    <div class="attackHTML" id="attackHTML">
+                        <div class="type-container">
+                            <div class="land-button type-button selected" id="island-attack-button">
+                                Island
+                            </div>
+                            <div class="ship-button type-button" id="ship-attack-button">
+                                Ship
+                            </div>
+                            <div class="player-button type-button" id="player-attack-button">
+                                Pirate
+                            </div> 
+                        </div>
+                        <div class="type-result-container" id="type-attack-result1">
+
+                        </div>
+                        <div class="type-result-container-2 hidden" id="type-attack-result2">
+
+                        </div>
+                    </div>
+                    <div class="defendHTML hidden" id="defendHTML">
+                        <div class="type-container">
+                            <div class="land-button type-button" id="island-defend-button">
+                                Island
+                            </div>
+                            <div class="ship-button type-button" id="ship-defend-button">
+                                Ship
+                            </div>
+                            <div class="player-button type-button" id="player-defend-button">
+                                Pirate
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                <h1 class="damage-space">Attacker</h1>
+                <div class="attacker-container" id="attacker-container">
+                    <div class="image-button" data-id="attacker">
+                        <div class="damage-text">Select Attacker</div>
+                        <img class="damage-image" id="attackerImage" src="./img/swords.png">
+                        <div class="button-overlay" id="attacker"></div>
+                    </div>
+                </div>
+                <div class="result-container">
+                    <div class="result-damage">
+
+                    </div>
+                </div>
+                <div class="defender-container" id="attacker-container">
+                    <div class="image-button" data-id="defender">
+                        <div class="damage-text">Select Defender</div>
+                        <img class="damage-image" id="defenderImage" src="./img/shield.png"/>
+                    </div>
+                </div>
+                <h1 class="damage-space">Defender</h1>
+            </div>
+            
+            <div class="view hidden" id="ship">
+                <h1>This is the Ship Calculator!</h1>
+                
+            </div>
+        </div>    
+        
+        <div class="footer"></div>
+        
+        <script type="text/javascript" src="js/data/weapons.js"></script>
+        <script type="text/javascript" src="js/data/ships.js"></script>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/View.js"></script>
+        <script type="text/javascript" src="js/damageView/damage.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        
+    </body>
+</html>
