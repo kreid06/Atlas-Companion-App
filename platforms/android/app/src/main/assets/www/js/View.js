@@ -1,3 +1,81 @@
+var findID = (id)=>{
+        let element = document.getElementById(id);
+        if(element){return element}
+        console.error(`${id} not found !`)
+        return false
+}
+
+var clearEventQueue = (events, target)=>{
+    if(events){
+        events.forEach(([type, oldFunction])=>{
+            target.removeEventListener(type, oldFunction)
+        })
+    }
+    return target
+}
+
+HTMLDivElement.prototype.show = function(){
+    this.classList.contains('hidden') ? this.classList.remove('hidden'): null
+}
+HTMLDivElement.prototype.hide = function(){
+    !this.classList.contains('hidden') ? this.classList.add('hidden') : null
+}
+HTMLDivElement.prototype.select = function(){
+    !this.classList.contains('selected') ? this.classList.add('selected'): null
+}
+HTMLDivElement.prototype.deselect = function(){
+    this.classList.contains('selected') ? this.classList.remove('selected'): null
+}
+
+var newEventQueue = (events, target)=>{
+    let types = []
+        Object.entries(events).forEach(([type, functionObject])=> {
+            let newFunction = (e)=>{
+                Object.values(functionObject).forEach((currentFunction)=>{
+                    currentFunction(e);
+                })
+            }
+            types.push([type,newFunction])
+            target.addEventListener(type, newFunction)
+        });
+        return types
+}
+console.dir(document.getElementById('attackHTML'))
+var newItemCard = (name, id, imageSrc, categoryName, type, variables)=>{
+    let itemCard = document.createElement('div');
+    let itemImg = document.createElement('img');
+    let itemText = document.createElement('div');
+    let overlayBtn = document.createElement('div');
+    let newID = `${categoryName}-${type}-${id}`
+
+    itemImg.classList.add(`item-card-img`);
+    itemImg.setAttribute('src', `./img/${imageSrc?imageSrc:'close.png'}`);
+
+    itemText.classList.add(`item-card-text`);
+    itemText.innerHTML = name.replace(/_/g, " ");
+    
+    overlayBtn.classList.add('item-overlay')
+    overlayBtn.setAttribute('data-category', categoryName)
+    overlayBtn.setAttribute('data-parentID', newID);
+
+    itemCard.classList.add(`${categoryName}-card`);
+    itemCard.classList.add(`item-card`);
+    itemCard.setAttribute('id', newID)
+
+    newID === variables.selectedAttackShipType ||
+    newID === variables.selectedAttackType     ||
+    newID === variables.selectedAttacker //    ||
+    // newID === selectedDefendType  ||
+    // newID === selectedDefendShipType 
+    ? itemCard.select(): null
+    
+    itemCard.appendChild(overlayBtn);
+    itemCard.appendChild(itemImg);
+    itemCard.appendChild(itemText);
+    
+    return itemCard;
+}
+
 function View(id, status){
     this.containers = {};
     this.viewEvents = {};
@@ -5,14 +83,9 @@ function View(id, status){
     this.currentEventQueue;
     this.id = id;
     this.view = null;
-    this.status = status
+    this.status = status;
 
-    var findID = (id)=>{
-        let element = document.getElementById(id);
-        if(element){return element}
-        console.error(`${id} not found !`)
-        return false
-    }
+    
     this.view = findID(this.id)
     var getViewElement = ()=>{
         let element = findID(this.id);
@@ -57,104 +130,207 @@ function View(id, status){
     }
     this.closeModal = ()=>{
         if(this.modal){
-            !this.modal.classList.contains('hidden') ?
-            this.modal.classList.add('hidden') : null;
+            this.modal = this.modal.hide()
             return console.log('closedModal')
         }
         return console.error('modal doesntExist')
     }
     this.open = ()=>{
-        this.view.classList.contains('hidden')?
-        this.view.classList.remove('hidden'):
-        null
+        this.view.show()
+        console.dir(this.view.classList)
+
         this.status = 'opened'
     }
     this.close = ()=>{
-        !this.view.classList.contains('hidden')?
-        this.view.classList.add('hidden'):
-        null
+        this.view.hide()
         this.status = 'closed'
     }
     this.startEventQueue = ()=>{
         getViewElement();
-        let types = []
-        if(this.currentEventQueue){
-            this.currentEventQueue.forEach(([type, oldFunction])=>{
-                this.view.removeEventListener(type, oldFunction)
-            })
-        }
-        console.log(this.viewEvents)
-        Object.entries(this.viewEvents).forEach(([type, functionObject])=> {
-            let newFunction = (e)=>{
-                Object.values(functionObject).forEach((currentFunction)=>{
-                    console.log(currentFunction)
-                    currentFunction(e);
-                })
-            }
-            types.push([type,newFunction])
-            this.view.addEventListener(type, newFunction)
-        });
-        this.currentEventQueue = types;
+        this.view = clearEventQueue(this.currentEventQueue, this.view);        
+        this.currentEventQueue = newEventQueue(this.viewEvents, this.view);
     }
 }
 
 function Modal(name ,id, viewID){
-    var findID = (id)=>{
-        let element = document.getElementById(id);
-        if(element){return element}
-        console.error(`${id} not found !`)
-        return false
-    }
     
-    const containers = {};
-    const modalEvents = {};
-    const modal = findID(id);
+
+    this.containers = {};
+    this.modalEvents = {};
+    this.modal = findID(id);
 
     this.name = name;
     this.id = id;
     this.viewID = viewID;
     this.currentEventQueue = null;
 
+
+    this.open = ()=>{
+        this.modal.show()
+    }
+    this.close = ()=>{
+        this.modal.hide()
+    }
     this.addModalEvents = (type,addFunction)=>{
-        if(!modal){return console.error('no modal!')}
-        if(modalEvents[type]=== null){modalEvents[type]={}};
-        modalEvents[type][addFunction.name]=addFunction;
+        console.log(addFunction)
+        if(!this.modal){return console.error('no modal!')}
+        if(this.modalEvents[type]=== undefined){this.modalEvents[type]={}};
+        this.modalEvents[type][addFunction.name]=addFunction;
         console.log('addedEventFuntion',addFunction)
     }
     this.removeModalEvents = (type, removeFunction)=>{
-        if(!modal){return console.error('no modal!')}
-        if(modalEvents[type][removeFunction.name]=== null){return};
-        delete modalEvents[type][removeFunction.name];
+        if(!this.modal){return console.error('no modal!')}
+        if(this.modalEvents[type][removeFunction.name]=== null){return};
+        delete this.modalEvents[type][removeFunction.name];
         console.log('removedEventFuntion',removeFunction)
     }
-
-    this.open = ()=>{
-        modal.classList.contains('hidden')?
-        modal.classList.remove('hidden'): null
+    this.startEventQueue = ()=>{
+        clearEventQueue(this.currentEventQueue, this.modal)
+        this.currentEventQueue = newEventQueue(this.modalEvents, this.modal);
     }
-    this.close = ()=>{
-        !modal.classList.contains('hidden')?
-        modal.classList.add('hidden'): null
-    }
-
     this.setContainer = (id)=>{
         let element = findID(id);
         if(!element){return}
-        if(containers[id] === undefined){
-            containers[id] = element; 
+        if(this.containers[id] === undefined){
+            this.containers[id] = element; 
             console.log(`Added ${id} !`)
         }else{
             console.error(`${id} is already defined !`)
         }
     }
 
-    this.start=()=>{
-
-    }
-
 }
 
+function DamageModal(name, id, viewID){
+    Modal.call(this, name, id, viewID);
+    this.header = findID('damage-modal-header');
+    this.variables = {
+        atkModalData : false,
+        selectedTab: findID('island-attack-button'),
+        selectedAttackShipType : null,
+        selectedAttacker : null,
+        selectedDefender : null,
+        type: null
+    }
 
+
+    this.open = (type)=>{
+        this.modal.show()
+        this.variables.type = type;
+        this.header.innerHTML = type === 'attacker' ? 'Choose Attacker' : 'Choose Defender';
+    }
+    this.close = ()=>{
+        this.modal.hide()
+    }
+
+    
+
+    var newResultList = (data, resultLevel, preCategoryName, type)=>{
+        let categoryName = preCategoryName + resultLevel.toString();
+        // let type = this.variables.type
+        let itemContainer = 
+        type === 'attacker' ? resultLevel === 1 ? 
+        this.containers['type-attack-result1'] :
+        this.containers['type-attack-result2'] :
+        type === 'defender' ? resultLevel === 1 ?
+        this.containers['type-defend-result1'] :
+        this.containers['type-defend-result2'] :
+        null
+        itemContainer.innerHTML = ""
+        data.forEach(({name,id,imageSrc})=>{
+            itemContainer.appendChild(newItemCard(name, id, imageSrc, categoryName, type, this.variables))
+        })
+    }
+
+    var changeTab = (page)=>{
+        // close current tab
+        this.variables.selectedTab.deselect()
+        if(this.variables.selectedTab.id === 'ship-attack-button'){
+            this.containers['type-attack-result2'].hide()
+        }
+        // open new tab
+        page.select()
+        
+        this.variables.selectedTab = page;
+        this.variables.selectedAttacker = null
+        this.variables.selectedAttackShipType = null
+
+        switch(page.id){
+            case 'island-attack-button':
+                newResultList(weaponData, 1, 'island', 'attacker');
+                break;
+            case 'ship-attack-button':
+                newResultList(shipData, 1, 'ship', 'attacker');
+                break;
+            case 'player-attack-button':
+                newResultList(weaponData, 1, 'player', 'attacker');
+                break;
+            default: 
+                console.log('invalid input');
+        }
+    }
+    
+    var selectShip = (shipID)=>{
+        let shipCard = findID(shipID);
+        let shipDataID = shipID.replace(/[\w]*-/g, "")
+
+        let oldShipCard = this.variables.selectedAttackShipType;
+        // console.log(shipID, oldShipCard)
+
+        shipCard.select();
+        oldShipCard ? oldShipCard.deselect():null;
+
+        this.variables.selectedAttackShipType = shipCard;
+        let weaponDataList = shipData[shipDataID].weapon_ids.map(weaponID=>{
+            return weaponData[weaponID]
+        })
+        newResultList(weaponDataList, 2, 'ship', 'attacker')
+        this.containers['type-attack-result2'].show()
+    }
+
+    var selectCard = (cardID)=>{
+        let weaponCard = findID(cardID);
+        let weaponID = cardID.replace(/[\w]*-/g, "");
+
+        let oldWeaponCard = this.variables.selectedAttacker;
+
+        weaponCard.select();
+        oldWeaponCard ? oldWeaponCard.deselect():null;
+
+        this.variables.selectedAttacker = weaponCard;
+    }
+    var damageEvents = (e)=>{
+        let id = e.target.id;
+        let parentID = e.target.dataset.parentid || "";
+            if(id === 'closeDamageModal'){
+                this.close()
+                return
+            }
+            if(id.includes('attack-button') && id !== this.variables.selectedTab.id){
+                console.log(this.variables.selectedTab)
+                changeTab(e.target)
+                return
+            }
+            else 
+            if(parentID.includes('ship1-attacker') && parentID !== (this.variables.selectedAttackShipType ? this.variables.selectedAttackShipType.id : false)){
+                selectShip(parentID)
+            }else 
+            if(parentID.includes('attacker') && parentID !== (this.variables.selectedAttacker ? this.variables.selectedAttacker.id : false)){
+                selectCard(parentID)
+            }
+
+        }
+        this.start = ()=>{
+            this.setContainer('type-attack-result1')
+            this.setContainer('type-attack-result2')
+            newResultList(weaponData, 1, 'island', 'attacker');
+
+            // this.setContainer('type-defend-result1')
+            // this.setContainer('type-defend-result2')
+            this.addModalEvents('mousedown', damageEvents)
+            this.startEventQueue()
+        }
+}
 
 function MenuView(id, status, parent){
     View.call(this, id, status);
@@ -171,8 +347,15 @@ function MenuView(id, status, parent){
 
 function DamageView(id, modalID, status){
     View.call(this, id, status);
-
-    this.setModal('damage-modal',modalID);
+    
+    this.setModal = (modalName, modalID)=>{
+        console.log('setting modal')
+        let element = findID(modalID);
+        if(!element){return}
+        this.modal = new DamageModal(modalName, modalID)
+        return console.log(`modal ${modalName} set`)
+    }
+    this.setModal('damage-modal', modalID);
     // this.parent = parent;
     var atkModalData = false;
     var selectedAttackType = "island-attack-button";
@@ -182,138 +365,24 @@ function DamageView(id, modalID, status){
 
     this.openModal = (sideID)=>{
         if(this.modal){
-            this.modal.open()
+            this.modal.open(sideID)
+            return
         }
         return console.error('modal doesntExist')
     }
 
-    function newResultList(data, type, resultLevel, preCategoryName){
-        let categoryName = preCategoryName + resultLevel.toString();
-        let itemContainer = 
-        type === 'attacker' && resultLevel === 1 ? 
-        containers['type-attack-result1'] :
-        type === 'attacker' && resultLevel === 2 ?
-        containers['type-attack-result2'] :
-        type === 'defender' && resultLevel === 1 ?
-        containers['type-defend-result1'] :
-        type === 'defender' && resultLevel === 2 ?
-        containers['type-defend-result2'] :
-        null
-        itemContainer.innerHTML = ""
-        data.forEach(({name,id,imageSrc})=>{
-    
-            let itemCard = document.createElement('div');
-            let itemImg = document.createElement('img');
-            let itemText = document.createElement('div');
-            let overlayBtn = document.createElement('div');
-            let newID = `${categoryName}-${type}-${id}`
-    
-            itemImg.classList.add(`item-card-img`);
-            itemImg.setAttribute('src', `./img/${imageSrc?imageSrc:'close.png'}`);
-    
-            itemText.classList.add(`item-card-text`);
-            itemText.innerHTML = name.replace(/_/g, " ");
-            
-            overlayBtn.classList.add('item-overlay')
-            overlayBtn.setAttribute('data-category', categoryName)
-            overlayBtn.setAttribute('data-id', newID);
-    
-            itemCard.classList.add(`${categoryName}-card`);
-            itemCard.classList.add(`item-card`);
-            itemCard.setAttribute('id', newID)
-    
-            newID === selectedAttackShipType ||
-            newID === selectedAttackType     ||
-            newID === selectedAttacker //    ||
-            // newID === selectedDefendType  ||
-            // newID === selectedDefendShipType 
-            ? itemCard.classList.add('selected'): null
-            
-            itemCard.appendChild(overlayBtn);
-            itemCard.appendChild(itemImg);
-            itemCard.appendChild(itemText);
-            
-            itemContainer.appendChild(itemCard)
-        })
-        
-    }
-
-    function selectCard(e){
-    let id = e.target.id
-        // if(e.target.classList.contains('item-overlay')){
-        //     let side = e.target.dataset.category === "weapon" ? "Attacker" : "Defender"
-        //     let prevCard = document.getElementsByClassName(`selected${side}`)[0] || null;
-        //     prevCard ? prevCard.classList.remove(`selected${side}`): null;
-        //     document.getElementById(e.target.dataset.id).classList.add(`selected${side}`)
-        //     side === "Attacker" ? selectedAttacker = e.target.dataset.id.replace(/[\w]*-/g,"") : selectedDefender = e.target.dataset.id
-        //     updateDamage(side)
-        //     console.log(e)
-
-        // }
-        if(id.includes('attack-button') && id !== selectedAttackType){
-            let prev = document.getElementById(selectedAttackType);
-            prev.classList.remove('selected');
-            e.target.classList.add('selected');
-            selectedAttackType = e.target.id;
-            switch(id){
-                case 'ship-attack-button':
-                    newResultList(shipData, 'attacker', 1, 'ship');
-                    break;
-                case 'island-attack-button':
-                    newResultList(weaponData, 'attacker', 1,'island');
-                    !containers['type-attack-result-2'].classList.contains('hidden')? containers['type-attack-result-2'].classList.add('hidden'): null;
-                    selectedAttackShipType = null;
-                    break;
-                default:console.log('it didnt work :(');
-            }
-            return
-        }
-        if(e.target.dataset.id?e.target.dataset.id.includes('ship1-attacker') :false && e.target.dataset.id !== selectedAttackShipType) {
-            console.log('looking for ship weapons');
-            containers['type-attack-result-2'].classList.contains('hidden')? containers['type-attack-result-2'].classList.remove('hidden'): null;
-            selectedAttackShipType ?  
-            document.getElementById(selectedAttackShipType).classList.remove('selected'): null;
-            document.getElementById(e.target.dataset.id).classList.add('selected');
-            let weaponDataList = shipData[parseInt(e.target.dataset.id.replace(/[\w]*-/g, ""))].weapon_ids.map(weaponID=>{
-                return weaponData[weaponID]
-            });
-            selectedAttackShipType = e.target.dataset.id
-            newResultList(weaponDataList, 'attacker', 2, 'ship')
-            return
-        }
-        let select = document.getElementById(selectedAttacker)
-        if(e.target.dataset.id?e.target.dataset.id.includes('island1-attacker') :false && e.target.dataset.id !== selectedAttacker) {
-            console.log('selecting island weapons');
-
-            select && selectedAttacker ?  
-            select.classList.remove('selected'): null;
-            document.getElementById(e.target.dataset.id).classList.add('selected');
-            
-            selectedAttacker = e.target.dataset.id
-        }
-        if(e.target.dataset.id?e.target.dataset.id.includes('ship2-attacker') :false && e.target.dataset.id !== selectedAttacker) {
-            console.log('selecting ship weapons', )
-            
-            select && selectedAttacker ?  
-            select.classList.remove('selected'): null;
-            document.getElementById(e.target.dataset.id).classList.add('selected');
-            
-            selectedAttacker = e.target.dataset.id
-        }
-    }
-
-
-    this.addViewEvents('mousedown', selectCard);
-
     let damageEvents = (e)=>{
         let id = e.target.id;
-        if(id = "attacker" || id = "defender"){
+        if(id === "attacker" || id === "defender"){
             this.openModal(id)
         }
     }
 
     this.start = ()=>{
-            console.log('starting DamageView')
+        console.log('starting DamageView');
+        this.addViewEvents('mousedown', damageEvents);
+        this.modal.start()
+        this.startEventQueue()
     }
 }
 
@@ -339,7 +408,6 @@ function App(id){
     
     let globalEvents = (e)=>{
         let id = e.target.id;
-        console.log(e.target.id)
         if(e.target.id === 'player-menu-btn'){
             this.containers['player-menu'].classList.toggle('hidden');
             return

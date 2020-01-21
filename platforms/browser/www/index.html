@@ -70,7 +70,10 @@
             <div class="view hidden" id="damage">
                 <div class="damage-modal hidden" id="damage-modal">
                     <img class="close-modal" id="closeDamageModal" src="./img/close.png"/>
-                    <div class="attackHTML" id="attackHTML">
+                    <div class="damage-modal-header" id="damage-modal-header"></div>
+                    
+                    <div class="attackHTML hidden" id="attackHTML">
+                        <div class="damage-modal-confirm-button hidden" id="weapon-confirm-button">Confirm</div>
                         <div class="type-container">
                             <div class="land-button type-button selected" id="island-attack-button">
                                 Island
@@ -88,10 +91,24 @@
                         <div class="type-result-container-2 hidden" id="type-attack-result2">
 
                         </div>
+                        <div class="damage-modal-footer" >
+                            <div class="attacker-image-container">
+                                <div class="item-selection" id="attack-selection-1">
+                                    <img class="selection-image" src="./img/island.png" />
+                                    <div class="attack-text">Island</div>
+                                </div>
+                                <div class="item-selection hidden" id="attack-selection-2">
+                                    <img class="selection-image" src="./img/island.png"/>
+                                    <div class="attack-text"></div>
+                                </div>
+                                
+                            </div>
+                        </div>
                     </div>
                     <div class="defendHTML hidden" id="defendHTML">
+                        <div class="damage-modal-confirm-button hidden" id="defender-confirm-button">Confirm</div>
                         <div class="type-container">
-                            <div class="land-button type-button" id="island-defend-button">
+                            <div class="land-button selected type-button" id="island-defend-button">
                                 Island
                             </div>
                             <div class="ship-button type-button" id="ship-defend-button">
@@ -101,26 +118,87 @@
                                 Pirate
                             </div>
                         </div>
+                        <div class="type-result-container" id="type-defend-result1">
+
+                        </div>
+                        <div class="type-result-container-2 hidden" id="type-defend-result2">
+
+                        </div>
+                        <div class="damage-modal-footer" >
+                            <div class="attacker-image-container">
+                                <div class="item-selection" id="defend-selection-1">
+                                    <img class="selection-image" src="./img/island.png" />
+                                    <div class="defend-text">Island</div>
+                                </div>
+                                <div class="item-selection hidden" id="defend-selection-2">
+                                    <img class="selection-image" src="./img/island.png"/>
+                                    <div class="defend-text"></div>
+                                </div>
+                                
+                            </div>
+                        </div>
                         
                     </div>
                 </div>
                 <h1 class="damage-space">Attacker</h1>
                 <div class="attacker-container" id="attacker-container">
-                    <div class="image-button" data-id="attacker">
-                        <div class="damage-text">Select Attacker</div>
-                        <img class="damage-image" id="attackerImage" src="./img/swords.png">
-                        <div class="button-overlay" id="attacker"></div>
+                    <div class="image-button attack-container hidden" id="attacker-source">
+                        <div class="damage-image-container" id="attack-source-image-container">
+                            <div class="button-overlay left" data-id="attacker-source"></div>
+                            <img class="damage-image" id="attack-source-image" src="/img/island.png" />
+                        </div>
+                        <div class="damage-text" id="attack-source-details">
+                            <div class="details-text" id="attack-source-details-text">
+                                Island
+                            </div>
+                            <input class="details-input" id="attack-source-details-input" type="number">
+                        </div>
+                    </div>
+                    <!--              ----split-----                  -->
+                    <div class="image-button attack-container flex-end" id="attacker">
+                        <div class="damage-text" id="attack-details">
+                            <div class="details-text" id="attack-details-text">
+                                
+                            </div>
+                            <input class="details-input" id="attack-details-input" type="number">
+                        </div>
+                        <div class="damage-image-container" id="attack-image-container">
+                            <img class="damage-image" id="attack-image" src="./img/swords.png">
+                            <div class="button-overlay right" data-id="attacker">
+                                Select Attacker
+                            </div>
+                        </div>
+                        
                     </div>
                 </div>
                 <div class="result-container">
                     <div class="result-damage">
+                        <div class="direct-hit-text">
 
+                        </div>
                     </div>
                 </div>
-                <div class="defender-container" id="attacker-container">
-                    <div class="image-button" data-id="defender">
-                        <div class="damage-text">Select Defender</div>
-                        <img class="damage-image" id="defenderImage" src="./img/shield.png"/>
+                <div class="defender-container" id="defender-container">
+                    <div class="image-button defend-container" id="defender">
+                        <div class="damage-text" id="defend-details">
+                            <div class="details-text" id="defend-details-text"></div>
+                            <input class="details-input" id="defend-details-input" type="number">
+                        </div>
+                        <div class="damage-image-container" id="defend-image-container">
+                            <img class="damage-image" id="defend-image" src="./img/shield.png"/>
+                            <div class="button-overlay right" data-id="defender">Select Defender</div>
+                        </div>
+                    </div>
+                    <div class="image-button defend-container hidden" id="defender-source">
+                        <div class="damage-image-container" id="defend-source-image-container">
+                            <div class="button-overlay" data-id="defender-source"></div>
+                            <img class="damage-image" id="defend-source-image" src="/img/island.png"/>
+                        </div>
+                        <div class="damage-text" id="defend-source-details">
+                            <div class="damage-text"id="defend-source-details-text">Island</div>
+                            <input class="details-input" id="defend-source-details-input" type="number">
+                        </div>
+
                     </div>
                 </div>
                 <h1 class="damage-space">Defender</h1>
@@ -134,6 +212,7 @@
         
         <div class="footer"></div>
         
+        <script type="text/javascript" src="js/data/structure.js"></script>
         <script type="text/javascript" src="js/data/weapons.js"></script>
         <script type="text/javascript" src="js/data/ships.js"></script>
         <script type="text/javascript" src="cordova.js"></script>
