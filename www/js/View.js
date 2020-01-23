@@ -13,7 +13,7 @@ const newItemCard = (name, id, imageSrc, categoryName, type, variables)=>{
     
     overlayBtn.classList.add('item-overlay')
     overlayBtn.setAttribute('data-category', categoryName)
-    overlayBtn.setAttribute('data-parentID', newID);
+    overlayBtn.setAttribute('data-id', newID);
 
     itemCard.classList.add(`${categoryName}-card`);
     itemCard.classList.add(`item-card`);
@@ -230,7 +230,7 @@ function DamageModal(name, id, parentView){
         selectedAttackTab : findID('island-attack-button'),
         selectedDefendShipType : null,
         selectedDefender : null,
-        selectedDefendTab : findID('island-defend-button')
+        selectedDefendTab : findID('island-defend-button'),
     }
 
     this.open = (type)=>{
@@ -269,12 +269,10 @@ function DamageModal(name, id, parentView){
         let categoryName = preCategoryName + resultLevel.toString();
         // let type = this.variables.type
         let itemContainer = 
-        type === 'attacker' ? resultLevel === 1 ? 
+        type === 'attacker' ?
         this.containers['type-attack-result1'] :
-        this.containers['type-attack-result2'] :
-        type === 'defender' ? resultLevel === 1 ?
+        type === 'defender' ?
         this.containers['type-defend-result1'] :
-        this.containers['type-defend-result2'] :
         null
         itemContainer.innerHTML = ""
         data.forEach(({name,id,imageSrc})=>{
@@ -287,11 +285,12 @@ function DamageModal(name, id, parentView){
             this.variables.selectedAttackTab = null;
             this.variables.selectedAttacker = null;
             this.variables.selectedAttackShipType = null;
+            console.log(this.containers['attack-selection-1'].children[0])
 
-            this.containers['attack-selection-1'].children[0].setAttribute('src','')
-            this.containers['attack-selection-1'].children[1].innerHTML = ""
-            this.containers['attack-selection-2'].children[0].setAttribute('src','')
-            this.containers['attack-selection-2'].children[1].innerHTML = ""
+            this.containers['attack-selection-1'].children[0].children[0].setAttribute('src','')
+            this.containers['attack-selection-1'].children[0].children[1].innerHTML = ""
+            this.containers['attack-selection-2'].children[0].children[0].setAttribute('src','')
+            this.containers['attack-selection-2'].children[0].children[1].innerHTML = ""
 
             this.attackReady = false;
             modalStatusCheck('attack');
@@ -302,10 +301,10 @@ function DamageModal(name, id, parentView){
             this.variables.selectedDefender = null;
             this.variables.selectedDefendShipType = null;
 
-            this.containers['defend-selection-1'].children[0].setAttribute('src','')
-            this.containers['defend-selection-1'].children[1].innerHTML = ""
-            this.containers['defend-selection-2'].children[0].setAttribute('src','')
-            this.containers['defend-selection-2'].children[1].innerHTML = ""
+            this.containers['defend-selection-1'].children[0].children[0].setAttribute('src','')
+            this.containers['defend-selection-1'].children[0].children[1].innerHTML = ""
+            this.containers['defend-selection-2'].children[0].children[0].setAttribute('src','')
+            this.containers['defend-selection-2'].children[0].children[1].innerHTML = ""
 
             this.defendReady = false;
             modalStatusCheck('defend');
@@ -319,7 +318,7 @@ function DamageModal(name, id, parentView){
 
             this.variables.selectedAttackTab.deselect()
             if(this.variables.selectedAttackTab.id === 'ship-attack-button'){
-                this.containers['type-attack-result2'].hide()
+                this.containers['attacker-ship-image'].setAttribute('src', `./img/pirate-ship.png`)
             }
             // open new tab
             page.select()
@@ -328,7 +327,7 @@ function DamageModal(name, id, parentView){
             this.variables.selectedAttackTab = page;
 
             let cardContainer = this.containers['attack-selection-1'];
-            let cardSelection = cardContainer.children
+            let cardSelection = cardContainer.children[0].children
 
             switch(page.id){
                 case 'island-attack-button':
@@ -354,7 +353,7 @@ function DamageModal(name, id, parentView){
         if(this.type.id.includes('defend')) {
             this.variables.selectedDefendTab.deselect()
             if(this.variables.selectedDefendTab.id === 'ship-defend-button'){
-                this.containers['type-defend-result2'].hide()
+                this.containers['defender-ship-image'].setAttribute('src', `./img/pirate-ship.png`)
             }
             // open new tab
             page.select()
@@ -394,10 +393,10 @@ function DamageModal(name, id, parentView){
         let ship = shipData[shipDataID]
         if(this.type.id.includes('attack')){
             let cardContainer = this.containers['attack-selection-1'];
-            let cardSelection = cardContainer.children
+            let cardSelection = cardContainer.children[0].children
 
             // console.log(shipID, oldShipCard)
-
+            this.containers['attacker-ship-image'].setAttribute('src', `./img/${ship.imageSrc}`)
             cardSelection[0].setAttribute('src', `./img/${ship.imageSrc}`)
             cardSelection[1].innerHTML = ship.name
             
@@ -409,17 +408,16 @@ function DamageModal(name, id, parentView){
                 return weaponData[weaponID]
             })
             newResultList(weaponDataList, 2, 'ship', 'attacker')
-            this.containers['type-attack-result2'].show()
             this.attackReady = false;
             modalStatusCheck('attack')
         }
         else
         if(this.type.id.includes('defend')){
             let cardContainer = this.containers['defend-selection-1'];
-            let cardSelection = cardContainer.children
-
+            let cardSelection = cardContainer.children[0].children
             // console.log(shipID, oldShipCard)
-
+            
+            this.containers['defender-ship-image'].setAttribute('src', `./img/${ship.imageSrc}`)
             cardSelection[0].setAttribute('src', `./img/${ship.imageSrc}`)
             cardSelection[1].innerHTML = ship.name
             
@@ -431,7 +429,6 @@ function DamageModal(name, id, parentView){
                 return structureData[structureID]
             })
             newResultList(structureDataList, 2, 'ship', 'defender')
-            this.containers['type-defend-result2'].show()
             this.defendReady = false;
             modalStatusCheck('defend')
         }
@@ -443,7 +440,7 @@ function DamageModal(name, id, parentView){
         let card = findID(cardID);
         let realCardID = convertElementID(cardID);
         let cardContainer = ifAttack ? this.containers['attack-selection-2'] : this.containers['defend-selection-2'];
-        let cardSelection = cardContainer.children
+        let cardSelection = cardContainer.children[0].children
         let {imageSrc = 'close.png', name} = ifAttack ? weaponData[realCardID] : structureData[realCardID];
 
         console.log(cardSelection)
@@ -468,8 +465,8 @@ function DamageModal(name, id, parentView){
     }
     var damageEvents = (e)=>{
         let id = e.target.id;
-        let parentID = e.target.dataset.parentid || "";
-        console.log(id)
+        let parentID = e.target.dataset.id || "";
+        console.log(parentID)
             if(id === 'closeDamageModal'){
                 this.close()
             }
@@ -479,9 +476,8 @@ function DamageModal(name, id, parentView){
                 this.close()
             }
             else
-            if(id.includes('attack-button') && id !== this.variables.selectedAttackTab.id){
-                // console.log(this.selectedTab)
-                changeTab(e.target)
+            if(parentID.includes('attack-button') && id !== this.variables.selectedAttackTab.id){
+                changeTab(e.target.parentNode)
             }
             else 
             if(parentID.includes('ship1-attacker') && parentID !== (this.variables.selectedAttackShipType ? this.variables.selectedAttackShipType.id : false)){
@@ -497,9 +493,9 @@ function DamageModal(name, id, parentView){
                 this.close()
             }
             else
-            if(id.includes('defend-button') && id !== this.variables.selectedDefendTab.id){
+            if(parentID.includes('defend-button') && id !== this.variables.selectedDefendTab.id){
                 // console.log(this.selectedTab)
-                changeTab(e.target)
+                changeTab(e.target.parentNode)
             }
             else 
             if(parentID.includes('ship1-defender') && parentID !== (this.variables.selectedDefendShipType ? this.variables.selectedDefendShipType.id : false)){
@@ -513,15 +509,15 @@ function DamageModal(name, id, parentView){
         }
         this.start = ()=>{
             this.setContainer('type-attack-result1');
-            this.setContainer('type-attack-result2');
             this.setContainer('attack-selection-1');
             this.setContainer('attack-selection-2');
             this.setContainer('attackHTML');
             this.setContainer('type-defend-result1');
-            this.setContainer('type-defend-result2');
             this.setContainer('defend-selection-1');
             this.setContainer('defend-selection-2');
             this.setContainer('defendHTML');
+            this.setContainer('attacker-ship-image')
+            this.setContainer('defender-ship-image')
             newResultList(weaponData, 1, 'island', 'attacker');
             newResultList(structureData.filter(struture=>{return struture.category.includes('Structure')||struture.category.includes('Weapon')}), 1, 'island', 'defender')
 
