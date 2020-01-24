@@ -84,7 +84,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 5%;
+    border-radius: 10px;
 }
 #menu {
     align-items: center;
@@ -178,7 +178,7 @@ body {
     background-color: #1C93C4;
     z-index: 2;
     padding: 18% 0;
-    border-radius: 4%;
+    border-radius: 20px;
     box-shadow: 1px 1px 8px ;
 }
 
@@ -217,7 +217,7 @@ body {
     text-align: center;
     font-size: 15px;
     /* padding: 5px; */
-    border-radius: 10%;
+    border-radius: 10px;
     background-color: greenyellow;
 }
 .damage-modal-confirm-button.hidden{
@@ -247,7 +247,7 @@ body {
 .item-selection-image {
     background-color: skyblue; 
     padding:10px; 
-    border-radius: 10%;
+    border-radius: 10px;
     height: 50%;
     position: relative; 
     /* width:50%; */
@@ -257,6 +257,50 @@ body {
     background-color: #1C93C4;
     width: 100%;
     height: 50%;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.item-value-title{
+    width: 100%;
+    height:20%;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+.item-input-container-space{
+    width: 100%;
+    height: calc(100% / 3);
+    background-color: #1C93C4;
+}
+
+.item-value-input-container{
+    display: block;
+    /* flex-wrap: wrap; */
+    width: 80%;
+    height: 80%;    
+    background-color: #1C93C4;
+    overflow: scroll;
+    scroll-snap-type: y mandatory;
+}
+
+.item-value-input{
+    width: 100%;
+    height:calc(100% / 3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 2.5vh;
+    scroll-snap-align: center;
+    color: #FFFFFF;
+    background-color: #1C93C4;
+}
+.item-value-input.selected{
+    background-color: #FFFFFF;
+    color: #1C93C4;
+    font-size: 3vh;
+    border-radius: 10px;
 }
 
 
@@ -284,7 +328,7 @@ body {
     /* padding-top: 23%; */
     display: flex;
     position: relative;
-    border-radius: 10%;
+    border-radius: 20px;
     justify-content: center;
     align-items: flex-end;
 }
@@ -370,7 +414,7 @@ body {
     justify-content: center;
     align-items: center;
     margin: 5px;
-    border-radius: 10%;
+    border-radius: 10px;
     font-size: 10px
 }
 .item-card.selected{

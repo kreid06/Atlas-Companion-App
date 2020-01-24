@@ -44,13 +44,21 @@ const findID = (id)=>{
         return false
 }
 
-const clearEventQueue = (events, target)=>{
+const clearEventQueue = (events, view)=>{
+    if(events === undefined){
+        return view
+    }
+    let targetView
+    console.log(events)
     if(events){
         events.forEach(([type, oldFunction])=>{
-            target.removeEventListener(type, oldFunction)
+            Object.values(functionObject).forEach(({target})=>{
+                target.removeEventListener(type, oldFunction)
+                targetView = target.id.includes('view') ? target : targetView
+            })
         })
     }
-    return target
+    return targetView
 }
 
 HTMLDivElement.prototype.show = function(){
@@ -78,17 +86,34 @@ HTMLDivElement.prototype.deselection = function(){
     this.classList.contains('selection') ? this.classList.remove('selection'): null
 }
 
-const newEventQueue = (events, target)=>{
+const newEventQueue = (events)=>{
+    let newQueue = {};
+    let target;
     let types = []
-        Object.entries(events).forEach(([type, functionObject])=> {
-            let newFunction = (e)=>{
-                Object.values(functionObject).forEach((currentFunction)=>{
-                    currentFunction(e);
-                })
-            }
-            types.push([type,newFunction])
-            target.addEventListener(type, newFunction)
-        });
+    Object.values(events).forEach((event)=>{
+        let newEvent = Object.assign({}, event)
+        target = newEvent.target
+        delete newEvent.target
+        Object.values(newEvent).forEach(({type, eventFunction})=>{
+            target.addEventListener(type, eventFunction)
+            types.push([type, eventFunction, target])
+        })
+    })
+    console.log()
+
+    // console.log(Object.entries(events), 'hi')
+    //     Object.entries(events).forEach(([type, functionObject])=> {
+    //         console.log(functionObject)
+    //         let target = functionObject.target
+    //         let newFunction = (e)=>{
+    //             functionObject.forEach((eventFunction)=>{
+    //                 eventFunction(e);
+    //             })
+    //         }
+    //         types.push([type,newFunction])
+    //         target.addEventListener(type, newFunction)
+            
+    //     });
         return types
 }
 console.dir(document.getElementById('attackHTML'))
@@ -99,26 +124,24 @@ function View(id, status){
     this.modal = null;
     this.currentEventQueue;
     this.id = id;
-    this.view = null;
+    this.view = findID(this.id);
     this.status = status;
 
-    
-    this.view = findID(this.id)
     var getViewElement = ()=>{
         let element = findID(this.id);
         if(!element){return};
         this.view = element
     }
 
-    this.addViewEvents = (type, addFunction)=>{
+    this.addViewEvents = (type, eventFunction, target)=>{
         if(!this.modal){return console.error('no modal!')}
-        if(this.viewEvents[type] === undefined){this.viewEvents[type]={}};
-        this.viewEvents[type][addFunction.name] = addFunction ;
+        if(this.viewEvents[target.id] === undefined){this.viewEvents[target.id]={target}};
+        this.viewEvents[target.id][eventFunction.name] = {eventFunction, type} ;
     }
-    this.removeViewEvents = (type, removeFunction)=>{
+    this.removeViewEvents = (target, removeFunction)=>{
         if(!this.modal){return console.error('no modal!')}
-        if(this.viewEvents[type][removeFunction.name]=== null){return};
-        delete this.viewEvents[type][removeFunction.name];
+        if(this.viewEvents[target.id][removeFunction.name]=== null){return};
+        delete this.viewEvents[target.id][removeFunction.name];
         console.log('removedEventFuntion',removeFunction)
     }
 
@@ -163,9 +186,10 @@ function View(id, status){
         this.status = 'closed'
     }
     this.startEventQueue = ()=>{
+        console.log(this.viewEvents)
         getViewElement();
         this.view = clearEventQueue(this.currentEventQueue, this.view);        
-        this.currentEventQueue = newEventQueue(this.viewEvents, this.view);
+        this.currentEventQueue = newEventQueue(this.viewEvents);
     }
 }
 
@@ -188,12 +212,12 @@ function Modal(name ,id, parentView){
     this.close = ()=>{
         this.modal.hide()
     }
-    this.addModalEvents = (type,addFunction)=>{
+    this.addModalEvents = (type, addFunction, target)=>{
         console.log(addFunction)
         if(!this.modal){return console.error('no modal!')}
-        if(this.modalEvents[type]=== undefined){this.modalEvents[type]={}};
-        this.modalEvents[type][addFunction.name]=addFunction;
-        console.log('addedEventFuntion',addFunction)
+        if(this.modalEvents[target.id]=== undefined){this.modalEvents[target.id]={target}};
+        this.modalEvents[target.id][addFunction.name] = {type, eventFunction:addFunction};
+        console.log('addedEventFuntion',addFunction, target)
     }
     this.removeModalEvents = (type, removeFunction)=>{
         if(!this.modal){return console.error('no modal!')}
@@ -203,7 +227,7 @@ function Modal(name ,id, parentView){
     }
     this.startEventQueue = ()=>{
         clearEventQueue(this.currentEventQueue, this.modal)
-        this.currentEventQueue = newEventQueue(this.modalEvents, this.modal);
+        this.currentEventQueue = newEventQueue(this.modalEvents);
     }
     this.setContainer = (id)=>{
         let element = findID(id);
@@ -231,6 +255,9 @@ function DamageModal(name, id, parentView){
         selectedDefendShipType : null,
         selectedDefender : null,
         selectedDefendTab : findID('island-defend-button'),
+        shipAttackerDamage : 100,
+        weaponAttackerDamage : 100,
+
     }
 
     this.open = (type)=>{
@@ -505,8 +532,15 @@ function DamageModal(name, id, parentView){
             if(parentID.includes('defender') && parentID !== (this.variables.selectedDefender ? this.variables.selectedDefender.id : false)){
                 selectCard(parentID)
             }
-            
         }
+    var damageValueEvents = (e)=>{
+        let id = e.target.id
+        console.log(e)
+        if(id === "ship-value-input"){
+            let selectedValueElement = findID(`${id}-${this.variables.shipAttackerDamage}`)
+        }
+    }
+    
         this.start = ()=>{
             this.setContainer('type-attack-result1');
             this.setContainer('attack-selection-1');
@@ -523,7 +557,8 @@ function DamageModal(name, id, parentView){
 
             // this.setContainer('type-defend-result1')
             // this.setContainer('type-defend-result2')
-            this.addModalEvents('mousedown', damageEvents)
+            this.addModalEvents('mousedown', damageEvents, this.modal)
+            this.addModalEvents('scroll', damageValueEvents, findID("ship-value-input"))
             this.startEventQueue()
         }
 }
@@ -633,7 +668,7 @@ function DamageView(id, modalID, status){
         this.setContainer('attacker-source')
         this.setContainer('defender')
         this.setContainer('defender-source')
-        this.addViewEvents('mousedown', damageEvents);
+        this.addViewEvents('mousedown', damageEvents, this.view);
         this.modal.start()
         this.startEventQueue()
     }
@@ -641,7 +676,7 @@ function DamageView(id, modalID, status){
 
 function App(id){
     View.call(this, id);
-    this.currentPageID = 'menu';
+    this.currentPageID = 'menu-view';
     this.views = {}
     var start = false;
     this.changePage = (pageNum)=>{
@@ -667,9 +702,10 @@ function App(id){
         }
         
         if(id === 'damage-calculator' && id !== this.currentPageID){
+            console.log(this.views, this.currentPageID)
             this.views[this.currentPageID].close();
-            this.views.damage.open();
-            this.currentPageID = 'damage';
+            this.views["damage-view"].open();
+            this.currentPageID = 'damage-view';
             console.log('clicked damageView')
             return
         }
@@ -691,8 +727,8 @@ function App(id){
         // } 
         if(id === 'menu-btn' && id !== this.currentPageID){
             this.views[this.currentPageID].close();
-            this.views.menu.open();
-            this.currentPageID = 'menu';
+            this.views["menu-view"].open();
+            this.currentPageID = 'menu-view';
             console.log('clicked damageView')
             return
         } 
@@ -700,13 +736,13 @@ function App(id){
     this.start = ()=>{
         if(start){return};
         this.modal = new Modal('player-modal', 'player-menu', this.id);
-        this.views.menu =  new View('menu', 'opened');
+        this.views["menu-view"] =  new View('menu-view', 'opened');
 
-        this.views.damage = new DamageView('damage', 'damage-modal', 'closed');
+        this.views["damage-view"] = new DamageView('damage-view', 'damage-modal', 'closed');
         console.log(this.views.damage)
-        this.views.damage.start()
+        this.views["damage-view"].start()
         this.setContainer('player-menu');
-        this.addViewEvents('mousedown', globalEvents);
+        this.addViewEvents('mousedown', globalEvents, this.view);
         this.startEventQueue();
         start = true
     }

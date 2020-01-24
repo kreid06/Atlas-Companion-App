@@ -53,7 +53,7 @@
             <h1>This is the Player Menu!</h1>
         </div>
         <div class="view-container" id="view-container">
-            <div class="view" id="menu">
+            <div class="view" id="menu-view">
                 <div class="menu-button" id="capture-calculator" data-id="1">
                     Capture Times
                 </div>
@@ -64,10 +64,10 @@
                     Ship 
                 </div>
             </div>
-            <div class="view hidden" id="capture">
+            <div class="view hidden" id="capture-view">
                 <h1 class="damage-space">This is the Capture Time Calculator!</h1>
             </div>
-            <div class="view hidden" id="damage">
+            <div class="view hidden" id="damage-view">
                 <div class="damage-modal hidden" id="damage-modal">
                     <img class="close-modal" id="closeDamageModal" src="./img/close.png"/>
                     <div class="damage-modal-header" id="damage-modal-header"></div>
@@ -103,7 +103,7 @@
                                         <div class="value-title">
                                             Ship Damage
                                         </div>
-                                        <div class="item-value-input">
+                                        <div class="item-value-input-container" id="ship-value-input">
 
                                         </div>
                                     </div>
@@ -114,10 +114,10 @@
                                         <div class="attack-text"></div>
                                     </div>
                                     <div class="item-values" >
-                                        <div class="value-title">
+                                        <div class="item-value-title">
                                             Weapon Damage
                                         </div>
-                                        <div class="item-value-input">
+                                        <div class="item-value-input-container" id="weapon-value-input">
 
                                         </div>
                                     </div>
@@ -244,6 +244,7 @@
         <script type="text/javascript" src="js/data/weapons.js"></script>
         <script type="text/javascript" src="js/data/ships.js"></script>
         <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/pageScripts.js"></script>
         <script type="text/javascript" src="js/View.js"></script>
         <script type="text/javascript" src="js/damageView/damage.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
