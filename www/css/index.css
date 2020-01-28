@@ -223,7 +223,7 @@ body {
 .damage-modal-confirm-button.hidden{
     display: none;
 }
-.attacker-image-container{
+.modal-image-container{
     display: flex;
     position: relative;
     width: 100%;
@@ -541,11 +541,32 @@ body {
     justify-content: center;
     align-items: center;
 }
-.attack-text {
+.changable-value{
+    font-size: 3vh;
+    height: min-content;
+}
+.item-value-input-container-changable{
+    display: flex;
+    font-size: 3vh;
+    /* flex-wrap: wrap; */
+    height: 80%;
+    align-items: center;
+    width: 80%;
+}
+.input-box{
+    border: none;
+    width: 5vh;
+    background-color: rgba(0,0,0,0);
+    padding: 0;
+    font: inherit;
+    color:inherit
+}
+/* .attack-text {
     position: relative;
     text-align: center;
     bottom: 10px;
-}
+    width: 100%;
+} */
 /* Landscape layout (with min-width) */
 @media screen and (min-aspect-ratio: 1/1) and (min-width:400px) {
     .app {
