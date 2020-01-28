@@ -53,7 +53,7 @@
             <h1>This is the Player Menu!</h1>
         </div>
         <div class="view-container" id="view-container">
-            <div class="view" id="menu">
+            <div class="view" id="menu-view">
                 <div class="menu-button" id="capture-calculator" data-id="1">
                     Capture Times
                 </div>
@@ -64,10 +64,10 @@
                     Ship 
                 </div>
             </div>
-            <div class="view hidden" id="capture">
+            <div class="view hidden" id="capture-view">
                 <h1 class="damage-space">This is the Capture Time Calculator!</h1>
             </div>
-            <div class="view hidden" id="damage">
+            <div class="view hidden" id="damage-view">
                 <div class="damage-modal hidden" id="damage-modal">
                     <img class="close-modal" id="closeDamageModal" src="./img/close.png"/>
                     <div class="damage-modal-header" id="damage-modal-header"></div>
@@ -93,17 +93,16 @@
 
                         </div>
                         <div class="damage-modal-footer" >
-                            <div class="attacker-image-container">
+                            <div class="modal-image-container">
                                 <div class="item-selection" id="attack-selection-1">
                                     <div class="item-selection-image" >
                                         <img class="selection-image" src="./img/island.png" />
-                                        <div class="attack-text">Island</div>
                                     </div>
                                     <div class="item-values" >
                                         <div class="value-title">
                                             Ship Damage
                                         </div>
-                                        <div class="item-value-input">
+                                        <div class="item-value-input-container" id="ship-damage-input" data-increment="4">
 
                                         </div>
                                     </div>
@@ -111,14 +110,15 @@
                                 <div class="item-selection hidden" id="attack-selection-2">
                                     <div class="item-selection-image " >
                                         <img class="selection-image" src="./img/island.png"/>
-                                        <div class="attack-text"></div>
                                     </div>
                                     <div class="item-values" >
-                                        <div class="value-title">
+                                        <div class="item-value-title">
                                             Weapon Damage
                                         </div>
-                                        <div class="item-value-input">
-
+                                        <div class="item-value-input-container-changable"  data-increment="">
+                                            <div class="item-value-input selected">
+                                                <input class="input-box" type="number" value="100" id="weapon-value-input"/>%
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -148,7 +148,38 @@
                         </div>
 
                         <div class="damage-modal-footer" >
-                            <div class="damage-modal-footer-container">
+                            <div class="modal-image-container">
+                                <div class="item-selection" id="defend-selection-1">
+                                    <div class="item-selection-image" >
+                                        <img class="selection-image" src="./img/island.png" />
+                                    </div>
+                                    <div class="item-values" >
+                                        <div class="value-title">
+                                            Ship Resistance
+                                        </div>
+                                        <div class="item-value-input-container" id="ship-resistance-input" data-increment="8">
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item-selection hidden" id="defend-selection-2">
+                                    <div class="item-selection-image " >
+                                        <img class="selection-image" src="./img/island.png"/>
+                                    </div>
+                                    <div class="item-values" >
+                                        <div class="item-value-title">
+                                            Structure Durability
+                                        </div>
+                                        <div class="item-value-input-container-changable"  data-increment="">
+                                            <div class="item-value-input selected">
+                                                <input class="input-box" type="number" value="100" id="structure-value-input"/>%
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <!-- <div class="damage-modal-footer-container">
                                     <div class="item-selection" id="defend-selection-1">
                                         <img class="selection-image" src="./img/island.png" />
                                         <div class="defend-text">Island</div>
@@ -157,7 +188,7 @@
                                         <img class="selection-image" src="./img/island.png"/>
                                         <div class="defend-text"></div>
                                     </div>
-                            </div>
+                            </div> -->
                         </div>
                         
                     </div>
@@ -240,13 +271,14 @@
         
         <div class="footer"></div>
         
-        <script type="text/javascript" src="js/data/structure.js"></script>
-        <script type="text/javascript" src="js/data/weapons.js"></script>
-        <script type="text/javascript" src="js/data/ships.js"></script>
+        <script type="text/javascript" src="./js/data/structure.js"></script>
+        <script type="text/javascript" src="./js/data/weapons.js"></script>
+        <script type="text/javascript" src="./js/data/ships.js"></script>
         <script type="text/javascript" src="cordova.js"></script>
-        <script type="text/javascript" src="js/View.js"></script>
-        <script type="text/javascript" src="js/damageView/damage.js"></script>
-        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" src="./js/pageScripts.js"></script>
+        <script type="text/javascript" src="./js/View.js"></script>
+        <script type="text/javascript" src="./js/damageView/damage.js"></script>
+        <script type="text/javascript" src="./js/index.js"></script>
         
     </body>
 </html>
