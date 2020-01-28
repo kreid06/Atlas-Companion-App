@@ -649,7 +649,7 @@ function DamageView(id, modalID, status){
         
             this.containers[`${newType}er`].children[`${newType}-details`].children[`${newType}-details-text`].innerHTML = selectedItemType.name.replace(/_/g, " ")
             this.containers[`${newType}er`].selection()
-            this.containers[`${newType}er`].children[`${newType}-image-container`].children[`${newType}-image`].setAttribute('src', `./img/${selectedItemType.imageSrc}`);
+            this.containers[`${newType}er`].children[`${newType}-image-container`].children[`${newType}-image`].setAttribute('src', `./img/${selectedItemType.imageSrc ? selectedItemType.imageSrc : 'close.png' }`);
             this.containers[`${newType}er`].children[`${newType}-details`].children[`${newType}-details-value`].innerHTML = `${selectedTypeValue}%`
 
             this.containers[`${newType}er-source`].show()
