@@ -709,14 +709,67 @@ function DamageView(id, modalID, status){
         tabSelected: null
     }
 
-    this.getDamage = ()=>{
+    this.calcDamage = ()=>{
+        if(this.variables.selectedAttackerAmmo && this.variables.selectedDefenderStructure){
+            let selectedAttackerAmmo = weaponAmmoData[convertElementID(this.variables.selectedAttackerAmmo.id)]
+            let defenderType = structureData[convertElementID(this.variables.selectedDefenderStructure.id)]
+            let shipAttackerDamage = 100;
+            let damage = null;
+            let type;
+            let sourceType = null;
+
+            switch(true){
+                case (this.variables.selectedAttackShipType  !== null):
+                    shipAttackerDamage = this.variables.shipAttackerDamage
+                    // break;
+                case (this.variables.selectedDefendShipType !== null):
+                    switch(true){
+
+                        case (defenderType.name.includes('Sail')):
+                            type = 'sail'
+                            console.log('ran2')
+                            break;
+                        case (defenderType.category === "Ship_Part" || defenderType === 'Structure_Wood'):
+                            console.log('ran')
+                            type = 'part'
+                            break;
+                    }
+                    sourceType = 'ship'
+                    break;
+                case true:
+                    switch(defenderType.category.replace(/Structure_/g,"")){
+                        
+                        case "Thatch": 
+                            type = 'thatch'
+                            break;
+                        case "Wood":
+                            type = 'wood'
+                            break;
+                        case "Stone":
+                            type = 'stone'
+                            break;
+                        case "Weapon":
+                            type = 'structure_weapon'
+                            break;
+                        case "Defensive_Weapon":
+                            type = 'defensive_weapon'
+                            break;
+                    }
+                    sourceType = 'land';
+                break;
+            }
+            console.log(selectedAttackerAmmo)
+            damage = (shipAttackerDamage * this.variables.weaponAttackerDamage/10000) * (selectedAttackerAmmo.damage[sourceType][type].direct + selectedAttackerAmmo.damage[sourceType][type].splash)
+            console.log(damage)
+            this.containers['main-result'].innerHTML = damage
+        }
         console.log(this.variables)
     }
 
     this.setModal = (modalName, modalID)=>{
         console.log('setting modal')
         let element = findID(modalID);
-        if(!element){return}
+        if(!element){r[sourcetype]}
         this.modal = new DamageModal(modalName, modalID, this)
         return console.log(`modal ${modalName} set`)
     }
@@ -777,7 +830,6 @@ function DamageView(id, modalID, status){
                 this.containers[`${newType}er-source`].children[`${newType}-source-details`].children[`${newType}-source-details-value`].innerHTML = `${selectedSourceValue}%`
             }
             this.containers[`${newType}er-source`].children[`${newType}-source-image-container`].children[`${newType}-source-image`].setAttribute('src', `./img/${selectedSource.imageSrc}`);
-            this.getDamage()
         }else{
             switch(type){
                 case 'ammo':
@@ -790,6 +842,7 @@ function DamageView(id, modalID, status){
                     break;
             }
         }
+        this.calcDamage()
     }
 
 
@@ -814,11 +867,12 @@ function DamageView(id, modalID, status){
         this.setContainer('attacker-source');
         this.setContainer('defender');
         this.setContainer('defender-source');
-        this.setContainer('attacker-result')
-        this.setContainer('defender-result')
+        this.setContainer('attacker-result');
+        this.setContainer('defender-result');
+        this.setContainer('main-result')
         this.addViewEvents('mousedown', damageEvents, this.view);
-        this.modal.start()
-        this.startEventQueue()
+        this.modal.start();
+        this.startEventQueue();
     }
 }
 
