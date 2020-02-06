@@ -72,7 +72,7 @@
                     <img class="close-modal" id="closeDamageModal" src="./img/close.png"/>
                     <div class="damage-modal-header" id="damage-modal-header"></div>
                     
-                    <div class="attackHTML hidden" id="attackHTML">
+                    <div class="typeHTML hidden" id="attackHTML">
                         <div class="damage-modal-confirm-button hidden" id="weapon-confirm-button">Confirm</div>
                         <div class="type-container">
                             <div class="land-button type-button selected" id="island-attack-button">
@@ -126,7 +126,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="defendHTML hidden" id="defendHTML">
+                    <div class="typeHTML hidden" id="defendHTML">
                         <div class="damage-modal-confirm-button hidden" id="defender-confirm-button">Confirm</div>
                         <div class="type-container">
                             <div class="land-button type-button selected" id="island-defend-button">
@@ -192,6 +192,18 @@
                         </div>
                         
                     </div>
+                    <div class="typeHTML hidden" id="ammoHTML">
+                        <div class="damage-modal-confirm-button hidden" id="ammo-confirm-button">Confirm</div>
+                        <div class="type-result-container ammo" id="ammo-type-container">
+
+                        </div>
+                    </div>
+                    <div class="typeHTML hidden" id="structureHTML">
+                        <div class="damage-modal-confirm-button hidden" id="structure-type-confirm-button">Confirm</div>
+                        <div class="type-result-container ammo" id="structure-type-container">
+
+                        </div>
+                    </div>
                 </div>
                 <h1 class="damage-space">Attacker</h1>
                 <div class="attacker-container" id="attacker-container">
@@ -228,11 +240,28 @@
                 </div>
                 <div class="result-container">
                     <div class="result-damage">
-                        <div class="result-side-container" id="attacker-result"></div>
-                        <div class="result-hit-cont">
+                        <div class="result-side-container" id="attacker-result">
+                            <div class="" id="attacker-ammo-text">
+                                Attacker Ammo
+                            </div>
+                            <div class="result-button left" id="attacker-type">
+                                <img class="damage-image" src="./img/close.png"/>
+                                <div class="button-overlay" data-id="attacker-type"></div>
+                            </div>
+                            
+                        </div>
+                        <div class="result-main-container">
                             Main Damage Text
                         </div>
-                        <div class="result-side-container" id="defender-result"></div>
+                        <div class="result-side-container" id="defender-result">
+                            <div class="" id="defender-type-text">
+                                Defender Type
+                            </div>
+                            <div class="result-button right" id="defender-type">
+                                <img class="damage-image" src="./img/close.png"/>
+                                <div class="button-overlay" data-id="defender-type"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="defender-container" id="defender-container">
@@ -271,6 +300,8 @@
         
         <div class="footer"></div>
         
+        <script type="text/javascript" src="./js/data/weaponAmmo.js"></script>
+        <script type="text/javascript" src="./js/data/structureCategory.js"></script>
         <script type="text/javascript" src="./js/data/structure.js"></script>
         <script type="text/javascript" src="./js/data/weapons.js"></script>
         <script type="text/javascript" src="./js/data/ships.js"></script>
