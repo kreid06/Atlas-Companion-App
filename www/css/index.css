@@ -181,10 +181,12 @@ body {
     border-radius: 20px;
     box-shadow: 1px 1px 8px ;
 }
-
+.damage-modal.selectType {
+    height: 40vh;
+}
 .damage-modal-header {
     width: 90%;
-    height: 10%;
+    height: 8vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -241,7 +243,7 @@ body {
     align-items: center;
     flex-wrap: wrap;
 }
-
+ 
 .item-selection.hidden > *{visibility: hidden;}
 
 .item-selection-image {
@@ -337,8 +339,11 @@ body {
     width: 100%;
     height: 25%;
     background-color: #31AEE2;
-    flex-flow: row nowrap;
+    /* flex-flow: row wrap; */
     overflow-x: auto;
+}
+.type-result-container.ammo {
+    height: 80%
 }
 .type-result-container-2{
     display: flex;
@@ -358,18 +363,13 @@ body {
 
 
 /* --- Attack Modal CSS ---  */
-.attackHTML {
+.typeHTML {
     display: block;
     width: 100%;
     height: 100%;
 }
-.defendHTML {
-    display: block;
-    width: 100%;
-    height: 100%;
-}
-.attackHTML.hidden {display: none;}
-.defendHTML.hidden {display: none;}
+
+.typeHTML.hidden {display: none;}
 
 /* .category-container{
     display: flex;
@@ -437,6 +437,18 @@ body {
 
 .selection-image{height: 100%;}
 
+.result-button{
+    display: flex;
+    position: absolute;
+    top: 50%;
+    height: 90%;
+    transform: translate(0, -50%);
+}
+.result-button.left{left:0}
+.result-button.right{right:0}
+.attacker-ammo-container.hidden{
+    display: none;
+}
 
 .attacker-container{
     display: flex;
@@ -454,12 +466,32 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    color: white
+}
+.result-side-container{
+    display: flex;
+    position: relative;
+    justify-content: center;
+    width: 100%;
+    height:30%;
+    align-items: center;
+    text-align: center;
+}
+.result-main-container{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 40%;
+    align-items: center;
+    text-align: center;
 }
 .result-damage{
     display: flex;
     width: 80%;
     height: 80%;
+    flex-wrap: wrap;
     background-color: purple;
+    text-align: center;
     box-shadow: 1px 1px 8px ;
 }
 .defender-container{

@@ -24,7 +24,7 @@ const newItemCard = (name, id, imageSrc, categoryName, type, variables)=>{
     newID === variables.selectedAttacker //    ||
     // newID === selectedDefendType  ||
     // newID === selectedDefendShipType 
-    ? itemCard.select(): null
+    ? itemCard.classAdd('selected'): null
     
     itemCard.appendChild(overlayBtn);
     itemCard.appendChild(itemImg);
@@ -33,8 +33,13 @@ const newItemCard = (name, id, imageSrc, categoryName, type, variables)=>{
     return itemCard;
 }
 
+
+
 const convertElementID = (id)=>{
-    return parseInt(id.replace(/[\w]*-/g, ""));
+    if(id){
+        return parseInt(id.replace(/[\w]*-/g, ""));
+    }
+    return null
 }
 
 const findID = (id)=>{
@@ -61,29 +66,11 @@ const clearEventQueue = (events, view)=>{
     return targetView
 }
 
-HTMLDivElement.prototype.show = function(){
-    this.classList.contains('hidden') ? this.classList.remove('hidden'): null
+HTMLElement.prototype.classRemove = function(type){
+    this.classList.contains(type) ? this.classList.remove(type): null
 }
-HTMLDivElement.prototype.hide = function(){
-    !this.classList.contains('hidden') ? this.classList.add('hidden') : null
-}
-HTMLImageElement.prototype.show = function(){
-    this.classList.contains('hidden') ? this.classList.remove('hidden'): null
-}
-HTMLImageElement.prototype.hide = function(){
-    !this.classList.contains('hidden') ? this.classList.add('hidden') : null
-}
-HTMLDivElement.prototype.select = function(){
-    !this.classList.contains('selected') ? this.classList.add('selected'): null
-}
-HTMLDivElement.prototype.deselect = function(){
-    this.classList.contains('selected') ? this.classList.remove('selected'): null
-}
-HTMLDivElement.prototype.selection = function(){
-    !this.classList.contains('selection') ? this.classList.add('selection'): null
-}
-HTMLDivElement.prototype.deselection = function(){
-    this.classList.contains('selection') ? this.classList.remove('selection'): null
+HTMLElement.prototype.classAdd = function(type){
+    !this.classList.contains(type) ? this.classList.add(type) : null
 }
 
 const newEventQueue = (events)=>{
@@ -170,19 +157,19 @@ function View(id, status){
     }
     this.closeModal = ()=>{
         if(this.modal){
-            this.modal = this.modal.hide()
+            this.modal = this.modal.classAdd('hidden')
             return console.log('closedModal')
         }
         return console.error('modal doesntExist')
     }
     this.open = ()=>{
-        this.view.show()
+        this.view.classRemove('hidden')
         console.dir(this.view.classList)
 
         this.status = 'opened'
     }
     this.close = ()=>{
-        this.view.hide()
+        this.view.classAdd('hidden')
         this.status = 'closed'
     }
     this.startEventQueue = ()=>{
@@ -207,10 +194,10 @@ function Modal(name ,id, parentView){
 
 
     this.open = ()=>{
-        this.modal.show()
+        this.modal.classRemove('hidden')
     }
     this.close = ()=>{
-        this.modal.hide()
+        this.modal.classAdd('hidden')
     }
     this.addModalEvents = (type, addFunction, target)=>{
         console.log(addFunction)
@@ -243,17 +230,24 @@ function Modal(name ,id, parentView){
 }
 
 function DamageModal(name, id, parentView){
+    const structureCategoryTypes = structureCategoryData.filter(structure=>{return !structure.name.includes('Ship_Part')});
+
     Modal.call(this, name, id, parentView);
     this.header = findID('damage-modal-header');
     this.attackReady = false;
     this.defendReady = false;
-    this.type = null
+    this.ammoReady = false;
+    this.structureReady = false;
+    this.type = null;
+    this.ammoList = null;
     this.variables = {
         selectedAttackShipType : null,
         selectedAttacker : null,
+        selectedAttackerAmmo : null,
         selectedAttackTab : findID('island-attack-button'),
         selectedDefendShipType : null,
         selectedDefender : null,
+        selectedDefenderType : null,
         selectedDefendTab : findID('island-defend-button'),
         shipAttackerDamage : 100,
         weaponAttackerDamage : 100,
@@ -263,35 +257,66 @@ function DamageModal(name, id, parentView){
     }
 
     this.open = (type)=>{
-        this.modal.show()
-        if(type === 'attacker'){
-            this.type = this.containers['attackHTML'];
-            this.header.innerHTML =  'Choose Attacker';
-            this.type.show()
-        }else if(type === 'defender'){
-            this.type = this.containers['defendHTML']
-            this.header.innerHTML = 'Choose Defender';
-            this.type.show()
+        this.modal.classRemove('hidden')
+        this.modal.classRemove('selectType')
+        switch(type){
+            case 'attacker':
+                this.type = this.containers['attackHTML'];
+                this.header.innerHTML =  'Choose Attacker';
+                break;
+            case 'defender':
+                this.type = this.containers['defendHTML']
+                this.header.innerHTML = 'Choose Defender';
+                break;
+            case 'attacker-type':
+                this.type = this.containers['ammoHTML']
+                this.header.innerHTML = 'Choose Ammo Type';
+                this.modal.classAdd('selectType')
+                break;
+            case 'defender-type':
+                this.type = this.containers['structureHTML']
+                this.header.innerHTML = 'Choose Structure Type';
+                this.modal.classAdd('selectType')
+                break;    
         }
-         
+        console.log(this.type)
+        this.type.classRemove('hidden');
+
     }
     this.close = ()=>{
-        this.modal.hide();
-        this.type.hide()
+        this.modal.classAdd('hidden');
+        this.type.classAdd('hidden')
     };
 
     var modalStatusCheck = (type)=>{
-        if(type === 'attack'){
-            let modalAttackButton = findID('weapon-confirm-button');
-            this.attackReady ?
-            modalAttackButton.show():
-            modalAttackButton.hide();
-        }else if(type === 'defend'){
-            let modalDefendButton = findID('defender-confirm-button')
-            this.defendReady ?
-            modalDefendButton.show():
-            modalDefendButton.hide();
+        let modalButton;
+        switch(type){
+            case 'attack':
+                modalButton = findID('weapon-confirm-button');
+                this.attackReady ?
+                modalButton.classRemove('hidden'):
+                modalButton.classAdd('hidden');
+                break;
+            case 'defend':
+                modalButton = findID('defender-confirm-button')
+                this.defendReady ?
+                modalButton.classRemove('hidden'):
+                modalButton.classAdd('hidden');
+                break;
+            case 'ammo':
+                modalButton = findID('ammo-confirm-button')
+                this.ammoReady ?
+                modalButton.classRemove('hidden'):
+                modalButton.classAdd('hidden');
+                break;
+            case 'structure':
+                modalButton = findID('structure-type-confirm-button')
+                this.structureReady ?
+                modalButton.classRemove('hidden'):
+                modalButton.classAdd('hidden');
+                break;
         }
+
     }
 
     var newResultList = (data, resultLevel, preCategoryName, type)=>{
@@ -341,12 +366,12 @@ function DamageModal(name, id, parentView){
         if(this.type.id.includes('attack')){
             // close current tab
 
-            this.variables.selectedAttackTab.deselect()
+            this.variables.selectedAttackTab.classRemove('selected')
             if(this.variables.selectedAttackTab.id === 'ship-attack-button'){
                 this.containers['attacker-ship-image'].setAttribute('src', `./img/pirate-ship.png`)
             }
             // open new tab
-            page.select()
+            page.classAdd('selected')
             
             clearModalData();
             this.variables.selectedAttackTab = page;
@@ -373,12 +398,12 @@ function DamageModal(name, id, parentView){
         }
         else
         if(this.type.id.includes('defend')) {
-            this.variables.selectedDefendTab.deselect()
+            this.variables.selectedDefendTab.classRemove('selected')
             if(this.variables.selectedDefendTab.id === 'ship-defend-button'){
                 this.containers['defender-ship-image'].setAttribute('src', `./img/pirate-ship.png`)
             }
             // open new tab
-            page.select()
+            page.classAdd('selected')
             
             clearModalData();
             this.variables.selectedDefendTab = page;
@@ -387,9 +412,9 @@ function DamageModal(name, id, parentView){
             let cardSelection = cardContainer.children[0].children
 
             switch(page.id){
-                case 'island-defend-button':
-                    cardSelection[0].setAttribute('src', `./img/island.png`)
-                    newResultList(structureData.filter(structure=>{return !structure.category.includes('Ship_Part')}), 1, 'island', 'defender');
+                case 'island-defend-button':                    
+                    cardSelection[0].setAttribute('src', `./img/island.png`);
+                    newResultList(structureCategoryTypes, 1, 'island', 'defender');
                     break;
                 case 'ship-defend-button':
                     cardSelection[0].setAttribute('src', `./img/pirate-ship.png`)
@@ -418,8 +443,8 @@ function DamageModal(name, id, parentView){
             this.containers['attacker-ship-image'].setAttribute('src', `./img/${ship.imageSrc}`)
             cardSelection[0].setAttribute('src', `./img/${ship.imageSrc}`)
             
-            shipCard.select();
-            oldShipCard ? oldShipCard.deselect():null;
+            shipCard.classAdd('selected');
+            oldShipCard ? oldShipCard.classRemove('selected'):null;
 
             this.variables.selectedAttackShipType = shipCard;
             let weaponDataList = ship.weapon_ids.map(weaponID=>{
@@ -432,50 +457,121 @@ function DamageModal(name, id, parentView){
         else
         if(this.type.id.includes('defend')){
             let cardContainer = this.containers['defend-selection-1'];
-            let cardSelection = cardContainer.children[0].children
+            let cardSelection = cardContainer.children[0].children;
+            let shipStructureCategoryTypes = structureCategoryData.filter(structure=>{return structure.name === 'Ship_Part' || structure.name.includes('Weapon') || structure.name === "Structure_Wood" });
             // console.log(shipID, oldShipCard)
             
             this.containers['defender-ship-image'].setAttribute('src', `./img/${ship.imageSrc}`)
             cardSelection[0].setAttribute('src', `./img/${ship.imageSrc}`)
             
-            shipCard.select();
-            oldShipCard ? oldShipCard.deselect():null;
+            shipCard.classAdd('selected');
+            oldShipCard ? oldShipCard.classRemove('selected'):null;
 
             this.variables.selectedDefendShipType = shipCard;
-            let structureDataList = ship.ship_part_ids.map(structureID=>{
-                return structureData[structureID]
-            })
-            newResultList(structureDataList, 2, 'ship', 'defender')
+        
+            newResultList(shipStructureCategoryTypes, 2, 'ship', 'defender')
             this.defendReady = false;
             modalStatusCheck('defend')
         }
     }
 
     var selectCard = (cardID)=>{
-        let ifAttack = this.type.id.includes('attack')
+        let card = findID(cardID),
+            realCardID = convertElementID(cardID),
+            cardContainer,
+            cardSelection,
+            oldCard,
+            imageSrc,
+            name;
 
-        let card = findID(cardID);
-        let realCardID = convertElementID(cardID);
-        let cardContainer = ifAttack ? this.containers['attack-selection-2'] : this.containers['defend-selection-2'];
-        let cardSelection = cardContainer.children[0].children
-        let {imageSrc = 'close.png', name} = ifAttack ? weaponData[realCardID] : structureData[realCardID];
-
-        console.log(cardSelection)
-
-        let oldCard = ifAttack ? this.variables.selectedAttacker : this.variables.selectedDefender;
-
-        card.select();
-        oldCard ? oldCard.deselect():null;
-        cardContainer.show()
-        cardSelection[0].setAttribute('src', `./img/${imageSrc?imageSrc:'close.png'}`)
-        if(ifAttack){
+        switch(this.type.id){
+            case 'attackHTML':
+                oldCard = this.variables.selectedAttacker;
+                cardContainer = this.containers['attack-selection-2'];
+                name = weaponData[realCardID].name;
+                imageSrc = weaponData[realCardID].imageSrc;
                 this.variables.selectedAttacker = card;
-                this.attackReady = true
+                this.attackReady = true;
                 modalStatusCheck('attack');
-        }else{
+                break;
+            case 'defendHTML':
+                oldCard = this.variables.selectedDefender;
+                cardContainer = this.containers['defend-selection-2'];
+                name = structureData[realCardID].name;
+                imageSrc = structureData[realCardID].imageSrc;
                 this.variables.selectedDefender = card;
-                this.defendReady = true
+                this.defendReady = true;
                 modalStatusCheck('defend');
+                break;
+            case 'ammoHTML':
+                oldCard = this.variables.selectedAttackerAmmo;
+                cardContainer = this.containers['ammo-type-container']
+                name = weaponAmmoData[realCardID].name;
+                imageSrc = weaponAmmoData[realCardID].imageSrc;
+                card.dataset.name = name
+                this.variables.selectedAttackerAmmo = card;
+                this.ammoReady = true;
+                modalStatusCheck('ammo');
+                break;
+            case 'structureHTML':
+                oldCard = this.variables.selectedDefenderStructure;
+                cardContainer = this.containers['structure-type-container']
+                name = structureData[realCardID].name;
+                imageSrc = structureData[realCardID].imageSrc;
+                card.dataset.name = name
+                this.variables.selectedDefenderStructure = card;
+                this.structureReady = true;
+                modalStatusCheck('structure');
+                console.log(name)
+                break;
+            default :
+                console.log('type not set')
+                break;
+        }
+        cardSelection = cardContainer.children[0].children
+        card.classAdd('selected');
+        oldCard ? oldCard.classRemove('selected'):null;
+        cardContainer.classRemove('hidden')
+        cardSelection[0].setAttribute('src', `./img/${imageSrc?imageSrc:'close.png'}`)
+        
+    }
+    var setTypeContainer = (type)=>{
+        switch(type){
+            case 'attack':
+                this.containers['ammo-type-container'].innerHTML = ""
+                let weaponID = convertElementID(this.variables.selectedAttacker.id);
+                let ammoList = weaponData[weaponID]['ammunition-ids']
+                ammoList.forEach((ammoId)=>{
+                    let {name, id, imageSrc} = weaponAmmoData[ammoId]
+                    this.containers['ammo-type-container'].appendChild(newItemCard(name, id, imageSrc, 'ammo', 'attacker', this.variables))
+                })
+                console.log(ammoList)
+                break;
+            case 'defend':
+                let structureTypeID = convertElementID(this.variables.selectedDefender.id);
+                let shipID = convertElementID(this.variables.selectedDefendShipType ? this.variables.selectedDefendShipType.id : null)
+                let structureList;
+
+                this.containers['structure-type-container'].innerHTML = ""
+                console.log(this.variables.selectedDefendShipType)
+                if(shipID){
+                    console.log(structureTypeID)
+                    structureList = shipData[shipID]["ship_part_ids"].reduce((filtered,structureID)=>{
+                        if(structureData[structureID].category === structureCategoryData[structureTypeID].name){
+                            filtered.push(structureData[structureID])
+                        }
+                        return filtered
+                    },[])
+                }else{
+                    console.log(structureTypeID)
+                    structureList = structureData.filter((structure)=>{return structure.category === structureCategoryData[structureTypeID].name})
+                }
+                console.log(structureList)
+                structureList.forEach(({name, id, imageSrc})=>{
+                    this.containers['structure-type-container'].appendChild(newItemCard(name, id, imageSrc, 'ammo', 'attacker', this.variables))
+                })
+                console.log(structureList, this.variables.selectedDefender)
+                break;
         }
         
     }
@@ -483,13 +579,28 @@ function DamageModal(name, id, parentView){
         let id = e.target.id;
         let parentID = e.target.dataset.id || "";
         console.log(parentID, e.target.id)
-        if(id === 'closeDamageModal'){
+        if(id.includes('confirm-button')){
+            switch(id){
+                case 'weapon-confirm-button':
+                    this.variables.weaponAttackerDamage = findID('weapon-value-input').value
+                    this.parentView.updateVariables(this.variables, 'attacker');
+                    setTypeContainer('attack');
+                    break;
+                case 'defender-confirm-button':
+                    this.variables.structureDefenderDurability = findID('structure-value-input').value
+                    this.parentView.updateVariables(this.variables, 'defender')
+                    setTypeContainer('defend')
+                    break;
+                case 'ammo-confirm-button':
+                    this.parentView.updateVariables(this.variables, 'ammo') 
+                    break;   
+                case 'structure-type-confirm-button':
+                    this.parentView.updateVariables(this.variables, 'structure')
+                    break;    
+            }
             this.close()
         }
-        else
-        if(id==="weapon-confirm-button"){
-            this.variables.weaponAttackerDamage = findID('weapon-value-input').value
-            this.parentView.updateVariables(this.variables, 'attacker')
+        if(id === 'closeDamageModal'){
             this.close()
         }
         else
@@ -503,12 +614,6 @@ function DamageModal(name, id, parentView){
         else 
         if(parentID.includes('attacker') && parentID !== (this.variables.selectedAttacker ? this.variables.selectedAttacker.id : false)){
             selectCard(parentID)
-        }
-        else
-        if(id==="defender-confirm-button"){
-            this.variables.structureDefenderDurability = findID('structure-value-input').value
-            this.parentView.updateVariables(this.variables, 'defender')
-            this.close()
         }
         else
         if(parentID.includes('defend-button') && id !== this.variables.selectedDefendTab.id){
@@ -530,7 +635,7 @@ function DamageModal(name, id, parentView){
         let boxDamage = Math.round(scrollTop/boxHeight) * parseInt(dataset.increment) + 100
         let boxID = `${id}-${boxDamage}`
         let selectedBox = findID(boxID)
-        selectedBox.select()
+        selectedBox.classAdd('selected')
         return boxDamage
     }
 
@@ -540,30 +645,37 @@ function DamageModal(name, id, parentView){
         // console.log(e)
         if(id === "ship-damage-input" || id === "ship-resistance-input"){
             let selectedValueElement = findID(`${id}-${typeBoolean? this.variables.shipAttackerDamage: this.variables.shipDefenderResistence}`)
-            selectedValueElement.deselect();
+            selectedValueElement.classRemove('selected');
             if(typeBoolean){
                 this.variables.shipAttackerDamage = getSelectedValue(e.target)
             }
             else{
                 this.variables.shipDefenderResistence = getSelectedValue(e.target)
             }
-            
         }
     }
+
+    var setModalContainers = ()=>{
+        this.setContainer('type-attack-result1');
+        this.setContainer('attack-selection-1');
+        this.setContainer('attack-selection-2');
+        this.setContainer('attackHTML');
+        this.setContainer('type-defend-result1');
+        this.setContainer('defend-selection-1');
+        this.setContainer('defend-selection-2');
+        this.setContainer('defendHTML');
+        this.setContainer('attacker-ship-image')
+        this.setContainer('defender-ship-image')
+        this.setContainer('ammoHTML');
+        this.setContainer('ammo-type-container');
+        this.setContainer('structureHTML');
+        this.setContainer('structure-type-container');
+}
     
         this.start = ()=>{
-            this.setContainer('type-attack-result1');
-            this.setContainer('attack-selection-1');
-            this.setContainer('attack-selection-2');
-            this.setContainer('attackHTML');
-            this.setContainer('type-defend-result1');
-            this.setContainer('defend-selection-1');
-            this.setContainer('defend-selection-2');
-            this.setContainer('defendHTML');
-            this.setContainer('attacker-ship-image')
-            this.setContainer('defender-ship-image')
+            setModalContainers()
             newResultList(weaponData, 1, 'island', 'attacker');
-            newResultList(structureData.filter(struture=>{return struture.category.includes('Structure')||struture.category.includes('Weapon')}), 1, 'island', 'defender')
+            newResultList(structureCategoryTypes, 1, 'island', 'defender');
 
             // this.setContainer('type-defend-result1')
             // this.setContainer('type-defend-result2')
@@ -595,6 +707,10 @@ function DamageView(id, modalID, status){
         selectedAttacker : null,
         selectedDefender : null,
         tabSelected: null
+    }
+
+    this.getDamage = ()=>{
+        console.log(this.variables)
     }
 
     this.setModal = (modalName, modalID)=>{
@@ -636,7 +752,7 @@ function DamageView(id, modalID, status){
             else
             if(type==="defender"){
                 shipType = this.variables.selectedDefendShipType;
-                selectedItemType = structureData[convertElementID(this.variables.selectedDefender.id) ];;
+                selectedItemType = structureCategoryData[convertElementID(this.variables.selectedDefender.id) ];;
                 selectedTabType = this.variables.selectedDefendTab;
                 
                 selectedSource = this.variables.selectedDefendShipType  
@@ -648,21 +764,34 @@ function DamageView(id, modalID, status){
             let newType = type.replace(/er/g, "")
         
             this.containers[`${newType}er`].children[`${newType}-details`].children[`${newType}-details-text`].innerHTML = selectedItemType.name.replace(/_/g, " ")
-            this.containers[`${newType}er`].selection()
+            this.containers[`${newType}er`].classAdd('selection')
             this.containers[`${newType}er`].children[`${newType}-image-container`].children[`${newType}-image`].setAttribute('src', `./img/${selectedItemType.imageSrc ? selectedItemType.imageSrc : 'close.png' }`);
             this.containers[`${newType}er`].children[`${newType}-details`].children[`${newType}-details-value`].innerHTML = `${selectedTypeValue}%`
 
-            this.containers[`${newType}er-source`].show()
-            this.containers[`${newType}er-source`].deselection()
+            this.containers[`${newType}er-source`].classRemove('hidden')
+            this.containers[`${newType}er-source`].classRemove('selection')
             this.containers[`${newType}er-source`].children[`${newType}-source-details`].children[`${newType}-source-details-text`].innerHTML = selectedSource.name.replace(/_/g, " ")
     
             if(selectedTabType.id.includes('ship')){
-                this.containers[`${newType}er-source`].selection();
+                this.containers[`${newType}er-source`].classAdd('selection');
                 this.containers[`${newType}er-source`].children[`${newType}-source-details`].children[`${newType}-source-details-value`].innerHTML = `${selectedSourceValue}%`
             }
             this.containers[`${newType}er-source`].children[`${newType}-source-image-container`].children[`${newType}-source-image`].setAttribute('src', `./img/${selectedSource.imageSrc}`);
+            this.getDamage()
+        }else{
+            switch(type){
+                case 'ammo':
+                    console.log(this.variables.selectedAttackerAmmo)
+                    this.containers[`attacker-result`].children[`attacker-ammo-text`].innerHTML = this.variables.selectedAttackerAmmo.dataset.name
+                    break;
+                case 'structure':
+                    console.log(this.variables.selectedAttackerAmmo)
+                    this.containers[`defender-result`].children[`defender-type-text`].innerHTML = this.variables.selectedDefenderStructure.dataset.name
+                    break;
+            }
         }
     }
+
 
     this.openModal = (sideID)=>{
         if(this.modal){
@@ -674,17 +803,19 @@ function DamageView(id, modalID, status){
 
     let damageEvents = (e)=>{
         let id = e.target.dataset.id;
-        if(id === "attacker" || id === "defender"){
+        if(id === "attacker" || id === "defender" || id === "attacker-type" || id === "defender-type"){
             this.openModal(id)
         }
     }
 
     this.start = ()=>{
         console.log('starting DamageView');
-        this.setContainer('attacker')
-        this.setContainer('attacker-source')
-        this.setContainer('defender')
-        this.setContainer('defender-source')
+        this.setContainer('attacker');
+        this.setContainer('attacker-source');
+        this.setContainer('defender');
+        this.setContainer('defender-source');
+        this.setContainer('attacker-result')
+        this.setContainer('defender-result')
         this.addViewEvents('mousedown', damageEvents, this.view);
         this.modal.start()
         this.startEventQueue()

@@ -19,7 +19,7 @@ var weaponData = [
         "name": "Torpedo_Launcher",
         "type": "structure_weapon",
         "id": 2,
-        "ammunition-ids": [],
+        "ammunition-ids": [7],
         "reload-time": undefined,
         "imageSrc": "items/Torpedo_Launcher.png"
     },
@@ -27,7 +27,7 @@ var weaponData = [
         "name": "Ballista",
         "id": 3,
         "type": "structure_weapon",
-        "ammunition-ids": [],
+        "ammunition-ids": [4,5],
         "reload-time": null,
         "imageSrc": "items/Ballista.png"
     },
@@ -35,7 +35,7 @@ var weaponData = [
         "name": "Mortar",
         "id": 4,
         "type": "structure_weapon",
-        "ammunition-ids": [],
+        "ammunition-ids": [6],
         "reload-time": undefined,
         "imageSrc": undefined
     },
@@ -43,7 +43,7 @@ var weaponData = [
         "name": "Swivel",
         "id": 5,
         "type": "defensive_weapon",
-        "ammunition-ids": [],
+        "ammunition-ids": [8,9,10],
         "reload-time": undefined,
         "imageSrc": undefined
     },
@@ -51,7 +51,7 @@ var weaponData = [
         "name": "Puckle",
         "id": 6,
         "type": "defensive_weapon",
-        "ammunition-ids": [],
+        "ammunition-ids": [11],
         "reload-time": undefined,
         "imageSrc": undefined
     },
@@ -59,7 +59,7 @@ var weaponData = [
         "name": "Catapult",
         "id": 7,
         "type": undefined,
-        "ammunition-ids": [],
+        "ammunition-ids": [12],
         "imageSrc": undefined
     },
     {
