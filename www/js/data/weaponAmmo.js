@@ -221,12 +221,14 @@ var weaponAmmoData= [
         "id": 7,
         "weapon_id": 2,
         "damage": {
-            "sails": null,
-            "ships": {
-                "direct": 4950,
-                "splash": 3900,
-                "close": 900,
-                "close-splash": 450
+            "ship": {
+                "sail": null,
+                "part": {
+                    "direct": 4950,
+                    "splash": 3900,
+                    "close": 900,
+                    "close-splash": 450
+                }
             },
             "land": {
                 "thatch": {
