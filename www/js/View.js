@@ -285,9 +285,9 @@ function DamageModal(name, id, parentView){
     }
     this.close = ()=>{
         this.modal.classAdd('hidden');
-        this.type.classAdd('hidden')
+        this.type.classAdd('hidden');
     };
-
+    
     var modalStatusCheck = (type)=>{
         let modalButton;
         switch(type){
@@ -583,11 +583,13 @@ function DamageModal(name, id, parentView){
             switch(id){
                 case 'weapon-confirm-button':
                     this.variables.weaponAttackerDamage = findID('weapon-value-input').value
+                    this.parentView.setResultVariable('attack')
                     this.parentView.updateVariables(this.variables, 'attacker');
                     setTypeContainer('attack');
                     break;
                 case 'defender-confirm-button':
                     this.variables.structureDefenderDurability = findID('structure-value-input').value
+                    this.parentView.setResultVariable('defend')
                     this.parentView.updateVariables(this.variables, 'defender')
                     setTypeContainer('defend')
                     break;
@@ -708,60 +710,78 @@ function DamageView(id, modalID, status){
         selectedDefender : null,
         tabSelected: null
     }
-
+    this.setResultValues = ()=>{
+        this.containers[`attacker-result`].children[`attacker-ammo-text`].innerHTML = this.variables.selectedAttackerAmmo ? this.variables.selectedAttackerAmmo.dataset.name : "Choose Attacker Ammo";
+        this.containers[`defender-result`].children[`defender-type-text`].innerHTML = this.variables.selectedDefenderStructure ? this.variables.selectedDefenderStructure.dataset.name : "Choose Defender Type";
+        this.containers['main-result'].children['main-result-text'].children['main-result-value'].children['main-result-value-value'].innerHTML = "???"
+    }
+    this.setResultVariable = (type)=>{
+        switch(type){
+            case 'attack':
+                this.variables.selectedAttackerAmmo = null;
+                break;
+            case 'defend':
+                this.variables.selectedDefenderStructure = null;
+                break;
+            default:
+                this.variables.selectedAttackerAmmo = null;
+                this.variables.selectedDefenderStructure = null;
+        }
+        this.setResultValues()
+    }
     this.calcDamage = ()=>{
         if(this.variables.selectedAttackerAmmo && this.variables.selectedDefenderStructure){
             let selectedAttackerAmmo = weaponAmmoData[convertElementID(this.variables.selectedAttackerAmmo.id)]
             let defenderType = structureData[convertElementID(this.variables.selectedDefenderStructure.id)]
             let shipAttackerDamage = 100;
+            let shipDefenderResistence = 100;
             let damage = null;
             let type;
             let sourceType = null;
 
-            switch(true){
-                case (this.variables.selectedAttackShipType  !== null):
-                    shipAttackerDamage = this.variables.shipAttackerDamage
-                    // break;
-                case (this.variables.selectedDefendShipType !== null):
-                    switch(true){
-
-                        case (defenderType.name.includes('Sail')):
-                            type = 'sail'
-                            console.log('ran2')
-                            break;
-                        case (defenderType.category === "Ship_Part" || defenderType === 'Structure_Wood'):
-                            console.log('ran')
-                            type = 'part'
-                            break;
-                    }
-                    sourceType = 'ship'
-                    break;
-                case true:
-                    switch(defenderType.category.replace(/Structure_/g,"")){
-                        
-                        case "Thatch": 
-                            type = 'thatch'
-                            break;
-                        case "Wood":
-                            type = 'wood'
-                            break;
-                        case "Stone":
-                            type = 'stone'
-                            break;
-                        case "Weapon":
-                            type = 'structure_weapon'
-                            break;
-                        case "Defensive_Weapon":
-                            type = 'defensive_weapon'
-                            break;
-                    }
-                    sourceType = 'land';
-                break;
+            if(this.variables.selectedAttackShipType  !== null){
+                shipAttackerDamage = this.variables.shipAttackerDamage
             }
-            console.log(selectedAttackerAmmo)
-            damage = (shipAttackerDamage * this.variables.weaponAttackerDamage/10000) * (selectedAttackerAmmo.damage[sourceType][type].direct + selectedAttackerAmmo.damage[sourceType][type].splash)
+            if(this.variables.selectedDefendShipType !== null){
+                switch(true){
+
+                    case (defenderType.name.includes('Sail')):
+                        type = 'sail'
+                        console.log('ran2')
+                        break;
+                    case (defenderType.category === "Ship_Part" || defenderType === 'Structure_Wood'):
+                        console.log('ran')
+                        type = 'part'
+                        break;
+                }
+                shipDefenderResistence = this.variables.shipDefenderResistence
+                sourceType = 'ship'
+            }else{
+                switch(defenderType.category.replace(/Structure_/g,"")){
+                    
+                    case "Thatch": 
+                        type = 'thatch'
+                        break;
+                    case "Wood":
+                        type = 'wood'
+                        break;
+                    case "Stone":
+                        type = 'stone'
+                        break;
+                    case "Weapon":
+                        type = 'structure_weapon'
+                        break;
+                    case "Defensive_Weapon":
+                        type = 'defensive_weapon'
+                        break;
+                }
+                sourceType = 'land';
+            }
+   
+            console.log(selectedAttackerAmmo,sourceType, type,defenderType.category, this.variables.selectedDefendShipType)
+            damage = (shipAttackerDamage * this.variables.weaponAttackerDamage/(100 * shipDefenderResistence)) * (selectedAttackerAmmo.damage[sourceType][type].direct + selectedAttackerAmmo.damage[sourceType][type].splash)
             console.log(damage)
-            this.containers['main-result'].innerHTML = damage
+            this.containers['main-result'].children['main-result-text'].children['main-result-value'].children['main-result-value-value'].innerHTML = Math.round(damage)
         }
         console.log(this.variables)
     }
@@ -769,7 +789,7 @@ function DamageView(id, modalID, status){
     this.setModal = (modalName, modalID)=>{
         console.log('setting modal')
         let element = findID(modalID);
-        if(!element){r[sourcetype]}
+        if(!element){return}
         this.modal = new DamageModal(modalName, modalID, this)
         return console.log(`modal ${modalName} set`)
     }
@@ -831,16 +851,7 @@ function DamageView(id, modalID, status){
             }
             this.containers[`${newType}er-source`].children[`${newType}-source-image-container`].children[`${newType}-source-image`].setAttribute('src', `./img/${selectedSource.imageSrc}`);
         }else{
-            switch(type){
-                case 'ammo':
-                    console.log(this.variables.selectedAttackerAmmo)
-                    this.containers[`attacker-result`].children[`attacker-ammo-text`].innerHTML = this.variables.selectedAttackerAmmo.dataset.name
-                    break;
-                case 'structure':
-                    console.log(this.variables.selectedAttackerAmmo)
-                    this.containers[`defender-result`].children[`defender-type-text`].innerHTML = this.variables.selectedDefenderStructure.dataset.name
-                    break;
-            }
+            this.setResultValues()
         }
         this.calcDamage()
     }
